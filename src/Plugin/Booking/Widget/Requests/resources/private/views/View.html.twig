@@ -1,0 +1,24 @@
+{% if requests | length %}
+    <div class="col-4">
+
+        <div class="portlet">
+            <div class="head">
+                <h3>Anfragen</h3>
+            </div>
+            <table class="table">
+                <tbody>
+                    {% for request in requests %}
+                        <tr data-href="{{ front.getUri('ApartmentsRental', 'Booking', 'Booking', 'request', { 'requestId': request.getId() }) }}">
+                            <td>
+                                {{ request.getCreated().format('d.m.Y H:i') }} Uhr<br />
+                                {{ request.getAccommodationUnit().getTitle() }}<br />
+                                {{ request.getCustomer().getFirstname() }} {{ request.getCustomer().getLastname() }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+{% endif %}

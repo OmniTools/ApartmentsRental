@@ -1,0 +1,15 @@
+{{ front.config({
+    'title': 'Saisons',
+    'buttons': [
+        [ 'neu', 'ApartmentsRental/Configurations/Seasons/ajaxModalCompose', null, 'ajax', 'neue Saison erstellen' ]
+    ],
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Konfiguration', 'ApartmentsRental/Configurations/General/index' ],
+        [ 'Saisons', 'ApartmentsRental/Configurations/Seasons/index' ]
+    ]
+}) }}
+
+<div id="seasonsReceiver">
+    {{ front.renderPartial('ApartmentsRental/Plugin/Configurations/Controller/Seasons/Partial/ListSeasons', { 'controller': controller }) | raw }}
+</div>

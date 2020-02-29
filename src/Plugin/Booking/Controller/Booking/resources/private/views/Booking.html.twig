@@ -1,0 +1,95 @@
+{{ front.config({
+    'title': 'Buchung #' ~ booking.getId(),
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Belegung', 'ApartmentsRental/Booking/Dashboard/index' ],
+        [ 'Buchung #' ~ booking.getId(), 'ApartmentsRental/Booking/Dashboard/index' ]
+    ],
+    'menu': {
+        'action': 'booking'
+    }
+}) }}
+
+<div class="row">
+    <div class="col-md-6">
+
+        <div class="portlet">
+            <div class="head">
+                <div class="label">
+                    <h3>Gastinformationen</h3>
+                </div>
+                <div class="toolbar">
+                    <a title="Gast verknüpfen" href="{{ controller.getActionUri('ajaxModalCustomerConnect', { bookingId: booking.getId() }) }}" class="ajax icon"><i class="fa fa-link"></i></a>
+                </div>
+            </div>
+            <div class="body">
+
+                {% if not booking.getCustomer() %}
+                    <div class="warning message">Mit dieser Buchung wurde noch kein Gast verknüpft.</div>
+
+                    <a title="Gast verknüpfen" class="ajax btn btn-primary btn-block" href="{{ controller.getActionUri('ajaxModalCustomerConnect', { bookingId: booking.getId() }) }}">jetzt Gast verknüpfen</a>
+                {% else %}
+                    {%  set customer = booking.getCustomer() %}
+
+                    <p>
+                        {{ customer.getFirstname() }} {{ customer.getLastname() }}<br />
+                        {{ customer.getStreet() }} {{ customer.getStreetNumber() }}<br />
+                        {{ customer.getZipcode() }} {{ customer.getCity() }}
+                    </p>
+
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-6">
+
+        <div class="portlet">
+            <div class="head">
+                <div class="label">
+                    <h3>Buchungsdaten</h3>
+                </div>
+            </div>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>Status</td>
+                        <td>{{ booking.getState() | trans }}</td>
+                    </tr>
+                    <tr>
+                        <td>Wohneinheit</td>
+                        <td><a href="{{ controller.getUri('details', 'Unit', 'AccommodationUnits', 'ApartmentsRental', { unitId: booking.getAccommodationUnit().getId() }) }}">{{ booking.getAccommodationUnit().getTitle() }}</a></td>
+                    </tr>
+                    <tr>
+                        <td>Anreise</td>
+                        <td>{{ booking.getDateFrom().format('d.m.Y') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Abreise</td>
+                        <td>{{ booking.getDateTo().format('d.m.Y') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Gäste</td>
+                        <td>{{ booking.getPersons() }}</td>
+                    </tr>
+                    <tr>
+                        <td>Kinder</td>
+                        <td>{{ booking.getChildren() }}</td>
+                    </tr>
+                    <tr>
+                        <td>Hunde</td>
+                        <td>{{ booking.getDogs() }}</td>
+                    </tr>
+
+                    {% if booking.getNote() %}
+                        <tr>
+                            <td>Bemerkung</td>
+                            <td>{{ booking.getNote() | nl2br }}</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

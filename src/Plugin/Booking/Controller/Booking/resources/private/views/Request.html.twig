@@ -1,0 +1,124 @@
+{{ front.config({
+    'title': 'Anfragen',
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Belegung', 'ApartmentsRental/Booking/Dashboard/index' ],
+        [ 'Anfragen', 'ApartmentsRental/Booking/Booking/requests' ],
+        [ 'Anfrage #' ~ request.getId() ]
+    ],
+    'menu': {
+        'action': 'overview'
+    }
+}) }}
+
+{% if not isValid %}
+    <div class="message Warning">Der gewünschte Zeitraum ist nicht mehr verfügbar!</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-6">
+
+        <div class="portlet">
+            <div class="head">
+                <div class="label">
+                    <h3>Buchungsinformationen</h3>
+                </div>
+                <div class="toolbar">
+
+                    <div class="dropdown">
+                        <span class="" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </span>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a title="Verlauf" class="ajax dropdown-item" href="{{ controller.getActionUri('ajaxModalRequestHistory', { requestId: request.getId() }) }}"><i class="fa fa-fw fa-history"></i> Verlauf</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>Status</td>
+                        <td>
+                            {{ ('State' ~ request.getState()) | trans }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Wohneinheit</td>
+                        <td>
+                            <a href="{{ front.getUri('ApartmentsRental', 'AccommodationUnits', 'Unit', 'details', { unitId: request.getAccommodationUnit().getId() }) }}">
+                                {{ request.getAccommodationUnit().getTitle() }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Reise-Datum</td>
+                        <td>
+                            {{ request.getDateFrom().format('d.m.Y') }}–{{ request.getDateTo().format('d.m.Y') }} {% if isValid %}<i class="fa fa-check-circle"></i>{% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Gäste</td>
+                        <td>
+                            {{ request.getPersons() }} Personen<br />
+                            {{ request.getChildren() }} Kinder<br />
+                            {{ request.getDogs() }} Hunde
+                        </td>
+                    </tr>
+
+                    {% if request.getNote() %}
+                        <tr>
+                            <td>Bemerkung</td>
+                            <td>{{ request.getNote() | nl2br }}</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if isValid %}
+            <a href="{{ controller.getActionUri('ajaxRequestConvert', { requestId: request.getId() }) }}" class="ajax btn btn-block btn-success">Anfrage einbuchen</a>
+        {% endif %}
+
+        {% if request.getState() != 'Cancelled' %}
+            <a href="{{ controller.getActionUri('ajaxRequestCancel', { requestId: request.getId() }) }}" class="ajax btn btn-block btn-danger">Anfrage stornieren</a>
+        {% endif %}
+
+
+    </div>
+    <div class="col-md-6">
+
+        <div class="portlet">
+            <div class="head">
+                <div class="label">
+                    <h3>Gastinformationen</h3>
+                </div>
+            </div>
+            <div class="body">
+
+                <p>
+                {{ request.getCustomer().getFullName() }}<br />
+                {{ request.getCustomer().getStreet() }} {{ request.getCustomer().getStreetNumber() }}<br />
+                {{ request.getCustomer().getZipcode() }} {{ request.getCustomer().getCity() }}
+                </p>
+
+                {% if request.getCustomer().getContacts() | length > 0 %}
+
+                        {% for contact in request.getCustomer().getContacts() %}
+                            <p>
+                                {% if contact.getType() == 'Email' %}
+                                    <a href="mailto:{{ contact.getValue() }}"><i class="fa fa-fw fa-envelope"></i> {{ contact.getValue() }}</a>
+                                {% elseif contact.getType() == 'Phone' %}
+                                    <a href="tel:{{ contact.getValue() }}"><i class="fa fa-fw fa-phone"></i> {{ contact.getValue() }}</a>
+                                {% endif %}
+                            </p>
+                        {% endfor %}
+
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+</div>

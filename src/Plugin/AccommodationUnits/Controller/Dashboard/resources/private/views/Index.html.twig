@@ -1,0 +1,14 @@
+{{ front.config({
+    'title': 'Wohneinheiten',
+    'buttons': [
+        [ 'neu', 'ApartmentsRental/AccommodationUnits/Unit/ajaxModalCompose', null, 'ajax', 'neue Wohneinheit erstellen' ]
+    ],
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Wohneinheiten' ]
+    ]
+}) }}
+
+<div id="unitsReceiver">
+    {{ front.renderPartial('ApartmentsRental/Plugin/AccommodationUnits/Controller/Unit/Partial/ListUnits', { 'controller': controller }) | raw }}
+</div>

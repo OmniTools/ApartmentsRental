@@ -1,0 +1,22 @@
+<form method="post" action="{{ controller.getActionUri('ajaxSeasonPriceCreate', { unitId: unit.getId() }) }}" class="ajax">
+
+    <div class="modal-body">
+
+        <div class="form-group">
+            <label for="seasonId">Saison</label>
+            <select class="form-control" id="seasonId" name="seasonId">
+                <option value="">bitte wählen ...</option>
+
+                {% for season in seasons %}
+                    <option value="{{ season.getId() }}">{{ season.getTitle() }} ({{ season.getDateFrom().format('d.m.Y') }}–{{ season.getDateTo().format('d.m.Y') }})</option>
+                {% endfor %}
+
+            </select>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">neuen Saison-Preis hinzufügen</button>
+    </div>
+
+</form>

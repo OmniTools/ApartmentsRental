@@ -1,0 +1,71 @@
+{{ front.config({
+    'title': 'Anfragen',
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Belegung', 'ApartmentsRental/Booking/Dashboard/index' ],
+        [ 'Anfragen' ]
+    ],
+    'menu': {
+        'action': 'overview'
+    }
+}) }}
+
+<h2>neue Buchungsanfragen</h2>
+
+{% if requests | length == 0 %}
+    <div class="message">Es liegen derzeit keine neuen Buchungsanfragen vor.</div>
+{% else %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Anfrage-Datum</th>
+                <th>Reise-Datum</th>
+                <th>Wohneinheit</th>
+                <th>Gast</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for request in requests %}
+                <tr class="{% if get.get('highlight') == request.getId() %}highlighted{% endif %}" data-href="{{ controller.getActionUri('request', { 'requestId': request.getId() }) }}">
+                    <td>{{ request.getCreated().format('d.m.Y H:i') }} Uhr</td>
+                    <td>{{ request.getDateFrom().format('d.m.') }}–{{ request.getDateTo().format('d.m.Y') }}</td>
+                    <td>{{ request.getAccommodationUnit().getTitle() }}</td>
+                    <td>{{ request.getCustomer().getFullName() }}</td>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+{% endif %}
+
+{% if requestsArchive | length > 0 %}
+
+    <h2>Anfrage-Archiv</h2>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Anfrage-Datum</th>
+            <th>Reise-Datum</th>
+            <th>Wohneinheit</th>
+            <th>Gast</th>
+        </tr>
+        </thead>
+        <tbody>
+
+            {% for request in requestsArchive %}
+                <tr class="{% if get.get('highlight') == request.getId() %}highlighted{% endif %}" data-href="{{ controller.getActionUri('request', { 'requestId': request.getId() }) }}">
+                    <td>
+                        {{ request.getCreated().format('d.m.Y H:i') }} Uhr
+                        <span class="badge badge-warning">{{ ('State' ~ request.getState()) | trans }}</span>
+                    </td>
+                    <td>{{ request.getDateFrom().format('d.m.') }}–{{ request.getDateTo().format('d.m.Y') }}</td>
+                    <td>{{ request.getAccommodationUnit().getTitle() }}</td>
+                    <td>{{ request.getCustomer().getFullName() }}</td>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+{% endif %}

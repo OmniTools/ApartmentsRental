@@ -1,0 +1,61 @@
+{{ front.config({
+    'title': 'Buchungen',
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Belegung', 'ApartmentsRental/Booking/Dashboard/index' ],
+        [ 'Buchungen', 'ApartmentsRental/Booking/Booking/index' ]
+    ],
+    'menu': {
+        'action': 'overview'
+    }
+}) }}
+
+<h2>Buchungen</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Anfrage-Datum</th>
+            <th>Reise-Datum</th>
+            <th>Wohneinheit</th>
+            <th>Gast</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for request in bookings %}
+        <tr class="{% if get.get('highlight') == request.getId() %}highlighted{% endif %}" data-href="{{ controller.getActionUri('booking', { 'bookingId': request.getId() }) }}">
+            <td>{{ request.getCreated().format('d.m.Y H:i') }} Uhr</td>
+            <td>{{ request.getDateFrom().format('d.m.') }}–{{ request.getDateTo().format('d.m.Y') }}</td>
+            <td>{{ request.getAccommodationUnit().getTitle() }}</td>
+            <td>{{ request.getCustomer().getFullName() }}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+<h2>Buchungsarchiv</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Anfrage-Datum</th>
+            <th>Reise-Datum</th>
+            <th>Wohneinheit</th>
+            <th>Gast</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for request in bookingsArchive %}
+        <tr class="{% if get.get('highlight') == request.getId() %}highlighted{% endif %}" data-href="{{ controller.getActionUri('booking', { 'bookingId': request.getId() }) }}">
+            <td>{{ request.getCreated().format('d.m.Y H:i') }} Uhr</td>
+            <td>{{ request.getDateFrom().format('d.m.') }}–{{ request.getDateTo().format('d.m.Y') }}</td>
+            <td>{{ request.getAccommodationUnit().getTitle() }}</td>
+            <td>{{ request.getCustomer().getFullName() }}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>

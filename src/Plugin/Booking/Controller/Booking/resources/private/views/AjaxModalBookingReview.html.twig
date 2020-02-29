@@ -1,0 +1,11 @@
+<table class="table">
+    <tbody>
+
+        {% for booking in bookings %}
+            <tr data-href="{{ controller.getActionUri('booking', { 'bookingId': booking.getId() }) }}">
+                <td>{{ booking.getDateFrom().format('d.m.Y') }}–{{ booking.getDateTo().format('d.m.Y') }}</td>
+            </tr>
+        {% endfor %}
+
+    </tbody>
+</table>

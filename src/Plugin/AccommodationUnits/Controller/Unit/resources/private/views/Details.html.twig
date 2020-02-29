@@ -1,0 +1,11 @@
+{{ front.config({
+    'title': 'Wohneinheit bearbeiten',
+    'buttons': [
+        [ 'neu', 'ApartmentsRental/AccommodationUnits/Unit/ajaxModalCompose', null, 'ajax', 'neue Wohneinheit erstellen' ]
+    ],
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Wohneinheiten', 'ApartmentsRental/AccommodationUnits/Dashboard/index' ],
+        [ "Wohneinheit „" ~ unit.getTitle() ~ "“" ]
+    ]
+}) }}

@@ -1,0 +1,114 @@
+{{ front.config({
+    'title': 'Wohneinheit bearbeiten',
+    'buttons': [
+        [ 'neu', 'ApartmentsRental/AccommodationUnits/Unit/ajaxModalCompose', null, 'ajax', 'neue Wohneinheit erstellen' ]
+    ],
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Wohneinheiten', 'ApartmentsRental/AccommodationUnits/Dashboard/index' ],
+        [ "Wohneinheit „" ~ unit.getTitle() ~ "“" ]
+    ],
+    'menu': {
+        'action': 'details'
+    }
+}) }}
+
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Stammdaten</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="booking-tab" data-toggle="tab" href="#booking" role="tab" aria-controls="booking" aria-selected="false">Buchbarkeit</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="texts-tab" data-toggle="tab" href="#texts" role="tab" aria-controls="texts" aria-selected="false">Texte</a>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+        <div class="panel">
+
+            <form class="ajax" method="post" action="{{ controller.getActionUri('ajaxUpdate', { 'unitId': unit.getId() }) }}">
+
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label for="title">Titel</label>
+                            <input type="text" class="form-control" id="title" name="title" placeholder="Titel" required value="{{ unit.getTitle() }}">
+                        </div>
+
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Speichern</button>
+
+            </form>
+
+        </div>
+
+    </div>
+    <div class="tab-pane fade" id="booking" role="tabpanel" aria-labelledby="booking-tab">
+
+        <div class="panel">
+
+            <form class="ajax" method="post" action="{{ controller.getActionUri('ajaxUpdateBookable', { 'unitId': unit.getId() }) }}">
+
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label for="maxGuests">max. Personen</label>
+                            <input type="number" aria-describedby="maxGuestsHelp" step="1" class="form-control" id="maxGuests" name="maxGuests" placeholder="max. Personen" required value="{{ unit.getMaxGuests() }}">
+                            <small id="maxGuestsHelp" class="form-text text-muted">Erwachsene und Kinder im richtigen Bett.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="maxToddlers">max. Kinder im Kinderbett</label>
+                            <input type="number" step="1" class="form-control" id="maxToddlers" name="maxToddlers" placeholder="max. Kinder im Kinderbett" value="{{ unit.getMaxToddlers() }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="maxDogs">max. Hunde</label>
+                            <input type="number" step="1" class="form-control" id="maxDogs" name="maxDogs" placeholder="max. Hunde" value="{{ unit.getMaxDogs() }}">
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="bookableOnline" name="bookableOnline" {% if unit.getBookableOnline() %}checked{% endif %}>
+                            <label class="form-check-label" for="bookableOnline">online buchbar</label>
+                        </div>
+
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Speichern</button>
+
+            </form>
+
+        </div>
+
+    </div>
+    <div class="tab-pane fade" id="texts" role="tabpanel" aria-labelledby="texts-tab">
+
+        <div class="panel">
+
+            <form class="ajax" method="post" action="{{ controller.getActionUri('ajaxUpdateTexts', { 'unitId': unit.getId() }) }}">
+
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label for="textAdditionalCosts">Zusatztext für Nebenkosten</label>
+                            <textarea class="form-control" id="textAdditionalCosts" name="texts[additionalCosts]" placeholder="Zusatztext für Nebenkosten">{{ unit.getTextByKey('additionalCosts').getText() }}</textarea>
+                        </div>
+
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Speichern</button>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>

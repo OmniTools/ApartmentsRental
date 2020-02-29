@@ -1,0 +1,27 @@
+{{ front.config({
+    'title': 'Belegung Wohneinheit „' ~ unit.getTitle() ~ '“',
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Belegung', 'ApartmentsRental/Booking/Dashboard/index' ]
+    ],
+    'buttons': [
+        [ 'neue Buchung', 'ApartmentsRental/Booking/Booking/ajaxModalCompose', null, 'ajax', 'neue Buchung erstellen' ]
+    ],
+}) }}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Zeitraum</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for booking in bookings %}
+            <tr data-href="{{ controller.getActionUri('booking', { bookingId: booking.getId() }) }}">
+                <td>{{ booking.getDateFrom().format('d.m.Y') }}–{{ booking.getDateTo().format('d.m.Y') }}</td>
+            </tr>
+        {% endfor %}
+
+    </tbody>
+</table>

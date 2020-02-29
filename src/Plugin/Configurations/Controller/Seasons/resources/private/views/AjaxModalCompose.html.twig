@@ -1,0 +1,42 @@
+<script>
+    $(function ( ) {
+
+        $('#proposals').change(function ( ) {
+
+            $('#title').val($(this).val());
+
+        });
+    });
+</script>
+
+<form method="post" action="{{ controller.getUri('ajaxCreate') }}" class="ajax">
+
+    <div class="modal-body">
+
+        <div class="form-group">
+            <label for="title">Titel</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="Titel">
+        </div>
+        <div class="form-group">
+            <label for="proposals">Titel Vorschläge</label>
+            <select class="form-control" id="proposals">
+                <option value="">keine Vorgabe ...</option>
+                <option>Hauptsaison</option>
+                <option>Zwischensaison</option>
+                <option>Nebensaison</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="dateFrom">Datum von *</label>
+            <input type="date" required class="form-control" id="dateFrom" name="dateFrom">
+        </div>
+        <div class="form-group">
+            <label for="dateTo">Datum bis *</label>
+            <input type="date" required class="form-control" id="dateTo" name="dateTo">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">neue Saison erstellen</button>
+    </div>
+
+</form>

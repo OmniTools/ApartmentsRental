@@ -1,0 +1,26 @@
+{% if units | length == 0 %}
+    <div class="message info">Es wurden bis jetzt keine Wohneinheiten erstellt.</div>
+{% else %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Titel</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for unit in units %}
+                <tr data-href="{{ controller.getUri('details', 'Unit', null, null, { 'unitId': unit.getId() }) }}" class="{% if highlight == unit.getId() %}highlighted{% endif %}">
+                    <td><i class="far fa-house icon"></i>{{ unit.getTitle() }}</td>
+                    <td>
+
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+{% endif %}
+

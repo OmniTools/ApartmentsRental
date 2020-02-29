@@ -1,0 +1,42 @@
+
+{% if seasons | length == 0 %}
+    <div class="message info">Es wurden bis jetzt keine Saisons erstellt.</div>
+{% endif %}
+
+{% for season in seasons %}
+    <div class="panel" data-season="{{ season.getId() }}">
+
+        <form>
+
+            <h4>
+                {{ season.getTitle() }}
+
+                <span class="dropdown" style="border-left: 1px solid #CCC; margin-left: 10px; padding-left: 14px;">
+                    <a class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a title="Saison bearbeiten" class="ajax dropdown-item" href="{{ controller.getActionUri('ajaxModalEdit', { seasonId: season.getId() }) }}"><i class="fa fa-fw fa-edit icon"></i>bearbeiten</a>
+                        <a data-confirm="Soll diese Saison wirklich gelöscht werden?" class="ajax dropdown-item" href="{{ controller.getActionUri('ajaxDelete', { seasonId: season.getId() }) }}"><i class="fa fa-fw fa-times icon"></i>löschen</a>
+                    </div>
+                </span>
+            </h4>
+
+            <div class="row">
+                <div class="col-4">
+
+                    <p>
+                        <b>Datum von</b><br />
+                        {{ season.getDateFrom().format('d.m.Y') }}
+                    </p>
+                    <p>
+                        <b>Datum bis</b><br />
+                        {{ season.getDateTo().format('d.m.Y') }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+{% endfor %}

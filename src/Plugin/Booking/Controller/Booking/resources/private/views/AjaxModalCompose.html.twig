@@ -1,0 +1,29 @@
+<form method="post" action="{{ controller.getUri('ajaxCreate') }}" class="ajax">
+
+    <div class="modal-body">
+
+        <div class="form-group">
+            <label for="title">Wohneinheit</label>
+            <select name="unitId" id="unitId" class="form-control">
+                <option value="">bitte wählen ...</option>
+
+                {% for unit in units %}
+                    <option {% if get.get('unitId') == unit.getId() %}selected{% endif %} value="{{ unit.getId() }}">{{ unit.getTitle() }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="dateFrom">Datum von</label>
+            <input type="date" class="form-control" id="dateFrom" name="dateFrom" value="{{ get.get('dateFrom') }}">
+        </div>
+        <div class="form-group">
+            <label for="dateTo">Datum bis</label>
+            <input type="date" class="form-control" id="dateTo" name="dateTo" value="{{ get.get('dateFrom') }}">
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">neue Buchung erstellen</button>
+    </div>
+
+</form>

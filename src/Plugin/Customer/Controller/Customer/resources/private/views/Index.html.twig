@@ -1,0 +1,30 @@
+{{ front.config({
+    'title': 'Verzeichnis',
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Gäste', 'ApartmentsRental/Customer/Dashboard/index' ],
+        [ 'Verzeichnis', 'ApartmentsRental/Customer/Customer/index' ]
+    ],
+    'buttons': [
+        [ 'neuer Gast', 'ApartmentsRental/Customer/Customer/ajaxModalCompose', null, 'ajax', 'neuen Gast erstellen' ]
+    ],
+}) }}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Vorname</th>
+            <th>Nachname</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for customer in customers %}
+            <tr data-href="{{ controller.getActionUri('details', { 'customerId': customer.getId() }) }}">
+                <td>{{ customer.getFirstname() }}</td>
+                <td>{{ customer.getLastname() }}</td>
+            </tr>
+        {% endfor %}
+
+    </tbody>
+</table>

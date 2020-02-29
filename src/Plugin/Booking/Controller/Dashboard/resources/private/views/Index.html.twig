@@ -1,0 +1,207 @@
+{{ front.config({
+    'title': 'Belegung',
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Belegung', 'ApartmentsRental/Booking/Dashboard/index' ]
+    ],
+    'buttons': [
+        [ 'neue Buchung', 'ApartmentsRental/Booking/Booking/ajaxModalCompose', null, 'ajax', 'neue Buchung erstellen' ]
+    ],
+}) }}
+
+<div class="portlet">
+    <div class="head">
+        <div class="label">
+            <h3>Kalender Woche {{ dateFrom | date('W') }}–{{ dateTo | date('W / Y') }}</h3>
+        </div>
+        <div class="toolbar">
+            <a href="{{ controller.getUri('index', 'Dashboard', 'Booking', 'ApartmentsRental', { date: dateFrom, dir: 'down' }) }}"><i class="fa fa-chevron-circle-left"></i> zurück</a>
+            <a href="{{ controller.getUri('index', 'Dashboard', 'Booking', 'ApartmentsRental') }}">Heute</a>
+            <a href="{{ controller.getUri('index', 'Dashboard', 'Booking', 'ApartmentsRental', { date: dateFrom, dir: 'up' }) }}">weiter <i class="fa fa-chevron-circle-right"></i></a>
+        </div>
+    </div>
+    <div class="body">
+
+        <div class="row">
+            <div class="col-3">
+
+                <table class="table noshadow">
+                    <tbody>
+                        <tr>
+                            <th><br /></th>
+                        </tr>
+                        <tr>
+                            <th><br /><br /></th>
+                        </tr>
+
+                        {% for unit in units %}
+                            <tr>
+                                <td>
+                                    <a href="{{ controller.getUri('unit', 'Booking', 'Booking', 'ApartmentsRental', { 'unitId': unit.getId() }) }}">{{ unit.getTitle() }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="col-9">
+
+                <style>
+                    table.booking-days .weekend {
+                        color: red;
+                    }
+
+                    table.booking-days .today {
+                        background: #CCC;
+                    }
+
+                    table.booking-days td {
+                        padding-left: 0;
+                        padding-right: 0;
+                    }
+
+                    table.booking-days td span.state-free {
+                        background: none;
+
+                    }
+
+                    table.booking-days td span {
+                        display: block;
+                        height: 20px;
+                        background: green;
+                        color: #FFF;
+                    }
+
+                    table.booking-days td span.state-first {
+                        border-top-left-radius: 10px;
+                        border-bottom-left-radius: 10px;
+                    }
+
+                    table.booking-days td span.state-last {
+                        border-top-right-radius: 10px;
+                        border-bottom-right-radius: 10px;
+                        margin-right: 0px;
+                    }
+
+                    table.booking-days td span.state-both {
+
+                    }
+
+                    table.booking-days td span.state-both::after {
+                        display: block;
+                        position: relative;
+                        content: " ";
+                        margin-top: -20px;
+                        margin-left: 17px;
+                        height: 36px;
+                        border-left: 4px solid #FFF;
+                        background: none;
+                        transform: rotate(45deg);
+                    }
+
+                    table.booking-days td.today span.state-both::after {
+                        border-color: #CCC;
+                    }
+
+                    table.booking-days td span a {
+                        display: block;
+                        color: #777;
+                    }
+
+                    table.booking-days td span.state-last a {
+                        color: #FFF;
+                    }
+
+                </style>
+
+                <div class="table-responsive">
+                    <table class="table booking-days">
+                        <tbody>
+                            <tr>
+
+                                {% for date in days %}
+                                    {% if loop.index0 % 7 == 0 %}
+                                        <th class="text-center">{{ date | date('W') }}</th>
+                                        <th colspan="6">{{ ("Month." ~ (date | date('m'))) | trans }}</th>
+                                    {% endif %}
+                                {% endfor %}
+
+                            </tr>
+                            <tr>
+
+                                {% for date in days %}
+                                    <th class="text-center {% if date == thisday %}today{% endif %} {% if date | date("N") == 6 or date | date("N") == 7 %}weekend{% endif %}">
+                                        {{ date | date('d') }}<br />
+                                        {{ ("Day.Short." ~ date | date('N')) | trans }}
+                                    </th>
+                                {% endfor %}
+
+                            </tr>
+
+                            {% for unitData in grid %}
+                                <tr>
+                                    {% for date in unitData.days %}
+                                        <td class="text-center {% if date.date == thisday %}today{% endif %} {% if date.date | date("N") == 6 or date.date | date("N") == 7 %}weekend{% endif %}">
+                                            <span class="state-{{ date.state }}">
+
+                                                {% if date.state == 'free' or date.state == 'last' %}
+                                                    <a title="Neue Buchung erstellen" class="ajax" href="{{ controller.getUri('ajaxModalCompose', 'Booking', 'Booking', 'ApartmentsRental', { 'unitId': unitData.unit.getId(), 'dateFrom': date.date }) }}">{{ date.date | date("d") }}</a>
+                                                {% else %}
+                                                    <a title="Buchung anzeigen" class="ajax" href="{{ controller.getUri('ajaxModalBookingReview', 'Booking', 'Booking', 'ApartmentsRental', { 'unitId': unitData.unit.getId(), 'dateFrom': date.date }) }}">&nbsp;</a>
+                                                {% endif %}
+
+                                            </span>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--
+
+<div class="row">
+    <div class="col-md-6">
+
+        <div class="portlet">
+            <div class="head">
+                <div class="label">
+                    <h3>unvollständige Buchungen</h3>
+                </div>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Zeitraum</th>
+                        <th>Wohneinheit</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for booking in bookingsIncomplete %}
+                        <tr data-href="{{ controller.getUri('booking', 'Booking', 'Booking', 'ApartmentsRental', { bookingId: booking.getId() }) }}">
+                            <td>{{ booking.getDateFrom().format('d.m.') }}–{{ booking.getDateTo().format('d.m.') }}</td>
+                            <td>{{ booking.getAccommodationUnit().getTitle() }}</td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+</div>
+
+-->

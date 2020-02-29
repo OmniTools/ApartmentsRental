@@ -1,0 +1,89 @@
+<form method="post" action="{{ controller.getActionUri('ajaxUpdate', { customerId: customer.getId() }) }}" class="ajax">
+
+    <div class="modal-body">
+
+        <div class="form-row">
+
+            <div class="form-group col-md-6">
+                <label for="gender">Anrede</label>
+                <select class="form-control" id="gender" name="customer[gender]">
+                    <option value="">bitte wählen ...</option>
+                    <option {% if customer.getGender() == 'Female' %}selected{% endif %} value="Female">Frau</option>
+                    <option {% if customer.getGender() == 'Male' %}selected{% endif %} value="Male">Herr</option>
+                    <option  {% if customer.getGender() == 'Diverse' %}selected{% endif %}value="Diverse">Divers</option>
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="title">Titel</label>
+                <input type="text" class="form-control" id="title" name="customer[title]" value="{{ customer.getTitle() }}">
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group col-md-6">
+                <label for="firstname">Vorname</label>
+                <input type="text" class="form-control" id="firstname" name="customer[firstname]" value="{{ customer.getFirstname() }}">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="lastname">Nachname</label>
+                <input type="text" class="form-control" id="lastname" name="customer[lastname]" value="{{ customer.getLastname() }}">
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group col-md-8">
+                <label for="street">Straße</label>
+                <input type="text" class="form-control" id="street" name="customer[street]" value="{{ customer.getStreet() }}">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="streetNumber">Nr.</label>
+                <input type="text" class="form-control" id="streetNumber" name="customer[streetNumber]" value="{{ customer.getStreetNumber() }}">
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group col-md-4">
+                <label for="zipcode">PLZ</label>
+                <input type="text" class="form-control" id="zipcode" name="customer[zipcode]" value="{{ customer.getZipcode() }}">
+            </div>
+            <div class="form-group col-md-8">
+                <label for="city">Ort</label>
+                <input type="text" class="form-control" id="city" name="customer[city]" value="{{ customer.getCity() }}">
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group col-md-6">
+                <label for="country">Land</label>
+                <select class="form-control" id="country" name="customer[country]">
+                    <option value="">bitte wählen ...</option>
+                    <option {% if customer.getCountry() == 'DE' %}selected{% endif %} value="DE">Deutschland</option>
+                    <option {% if customer.getCountry() == 'NL' %}selected{% endif %} value="NL">Niederlande</option>
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="language">Sprache</label>
+                <select class="form-control" id="language" name="customer[language]">
+                    <option value="">bitte wählen ...</option>
+                    <option {% if customer.getLanguage() == 'de' %}selected{% endif %} value="de">Deutsch</option>
+                    <option {% if customer.getLanguage() == 'nl' %}selected{% endif %} value="nl">Niederländisch</option>
+                </select>
+            </div>
+
+        </div>
+
+
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Speichern</button>
+    </div>
+
+</form>

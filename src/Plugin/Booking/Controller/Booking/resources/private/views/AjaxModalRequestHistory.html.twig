@@ -1,0 +1,14 @@
+<table class="table">
+    <tbody>
+
+        {% for log in history %}
+            <tr>
+                <td>{{ log.getCreated().format('d.m.Y H:i') }} Uhr</td>
+                <td>{{ log.getAction() | trans(log.getContextTranslatable()) | raw }}</td>
+            </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+
+

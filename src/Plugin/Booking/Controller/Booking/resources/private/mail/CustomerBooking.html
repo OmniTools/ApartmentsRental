@@ -1,0 +1,172 @@
+<html>
+<head>
+
+    <style>
+        body {
+            font-family: Arial;
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        h1 {
+            margin: 50px 0 20px 0;
+            font-size: 20px;
+        }
+
+        h2 {
+            margin: 50px 0 20px 0;
+            font-size: 16px;
+        }
+
+        p {
+            margin: 0 0 5px 0;
+            padding: 0;
+        }
+
+        table.table {
+            margin: 30px 0;
+            width: 100%;
+            border-spacing: 0;
+        }
+
+        table.table tr td {
+            padding: 10px 0;
+            border-top: 1px solid #CCC;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+
+    </style>
+
+
+</head>
+<body>
+
+<table width="100%">
+    <tr>
+        <td align="center">
+
+            <table width="600">
+                <tr>
+                    <td>
+
+                        {% block intro %}
+                            <h1>Buchung</h1>
+
+                            <p>Hallo,</p>
+                            <p>Sie haben folgende Buchung gemacht:</p>
+                        {% endblock %}
+
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td width="33%">Wohneinheit</td>
+                                <td>{{ unit.getTitle() }}</td>
+                            </tr>
+                            <tr>
+                                <td>von</td>
+                                <td>{{ booking.getDateFrom().format('d.m.Y') }}</td>
+                            </tr>
+                            <tr>
+                                <td>bis</td>
+                                <td>{{ booking.getDateTo().format('d.m.Y') }}</td>
+                            </tr>
+                            <tr>
+                                <td>Erwachsene</td>
+                                <td>{{ booking.getPersons() }}</td>
+                            </tr>
+                            <tr>
+                                <td>Kinder</td>
+                                <td>{{ booking.getChildren() }}</td>
+                            </tr>
+                            <tr>
+                                <td>Haustiere</td>
+                                <td>{{ booking.getPets() }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <h2>persönliche Daten</h2>
+
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td width="33%">Name</td>
+                                <td>{{ customer.getTitle() }} {{ customer.getFirstname() }} {{ customer.getLastname() }}</td>
+                            </tr>
+                            <tr>
+                                <td>Straße</td>
+                                <td>
+                                    {{ customer.getStreet() }} {{ customer.getStreetNumber() }}
+                                    {% if customer.getAddition() %}
+                                    <br />{{ customer.getAddition() }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Ort</td>
+                                <td>{{ customer.getZipcode() }} {{ customer.getCity() }}</td>
+                            </tr>
+
+                            {% for contact in customer.getContacts() %}
+                            <tr>
+                                <td>
+                                    {{ contact.getType() }}
+                                </td>
+                                <td>{{ contact.getValue() }}</td>
+                            </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+
+                        {% if booking.getNote() %}
+                            <h2>Bemerkung</h2>
+
+                            <p>{{ booking.getNote() | nl2br() }}</p>
+                        {% endif %}
+
+                        <h2>Kosten</h2>
+
+                        {% set costs = unit.getPriceSegmentsForBooking(booking) %}
+
+                        <table class="table">
+                            <tbody>
+                                {% for position in costs.positions %}
+                                    <tr>
+                                        <td>
+                                            {{ position.title }}
+
+                                            {% if position.text %}
+                                                <div style="color: #666; font-size: 14px">{{ position.text | nl2br }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td class="right">{{ position.total | number_format(2, ",", ".") }} EUR</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td class="right"><b>{{ costs.total | number_format(2, ",", ".") }} EUR</b></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+
+</body>
+</html>

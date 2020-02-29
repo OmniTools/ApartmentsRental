@@ -1,0 +1,26 @@
+{
+  "name": "omnitools/apartments-rental",
+  "description": "xxxxx",
+  "type": "omnitools-extension",
+  "authors": [
+    {
+      "name": "pixelfabrik",
+      "homepage": "https://www.pixel-fabrik.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../addresses"
+    }
+  ],
+  "require": {
+    "omnitools/core": "dev-master",
+    "omnitools/addresses": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "OmniTools\\ApartmentsRental\\": "/src/"
+    }
+  }
+}

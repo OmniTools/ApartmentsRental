@@ -1,0 +1,40 @@
+{{ front.config({
+    'title': 'Gast bearbeiten',
+    'breadcrumb': [
+        [ 'Vermietung', 'ApartmentsRental/Dashboard/Dashboard/index' ],
+        [ 'Gäste', 'ApartmentsRental/Customer/Dashboard/index' ],
+        [ 'Verzeichnis', 'ApartmentsRental/Customer/Customer/index' ]
+    ],
+    'buttons': [
+        [ 'neuer Gast', 'ApartmentsRental/Customer/Customer/ajaxModalCompose', null, 'ajax', 'neuen Gast erstellen' ]
+    ],
+}) }}
+
+<div class="row">
+    <div class="col-md-6">
+
+        <div class="portlet">
+            <div class="head">
+                <div class="label">
+                    <h3>Stammdaten</h3>
+                </div>
+                <div class="toolbar">
+
+                    <a title="Stammdaten bearbeiten" class="icon ajax" href="{{ controller.getActionUri('ajaxModalEdit', { 'customerId': customer.getId() }) }}"><i class="fa fa-edit"></i></a>
+
+                </div>
+            </div>
+            <div class="body">
+
+                <p>{{ customer.getFirstname() }} {{ customer.getLastname() }}</p>
+                <p>
+                    {{ customer.getStreet() }} {{ customer.getStreetNumber() }}<br />
+                    {{ customer.getZipcode() }} {{ customer.getCity() }}
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+

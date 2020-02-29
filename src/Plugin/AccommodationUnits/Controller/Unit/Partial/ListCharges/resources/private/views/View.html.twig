@@ -1,0 +1,29 @@
+
+{% if charges | length == 0 %}
+    <div class="message info">Es wurden bis jetzt keine Saison-Preise erstellt.</div>
+{% endif %}
+
+{% for charge in charges %}
+    <div class="portlet" data-charge="{{ charge.getId() }}">
+        <div class="head">
+            <div class="label">
+                <h3>Saison „{{ charge.getSeason().getTitle() }}“ {{ charge.getSeason().getDateFrom().format('d.m.') }}–{{ charge.getSeason().getDateTo().format('d.m.') }}</h3>
+            </div>
+            <div class="toolbar">
+                <a class="danger ajax" data-confirm="Soll dieser Saison-Preis wirklich gelöscht werden?" href="{{ controller.getActionUri('ajaxSeasonChargeDelete', { 'chargeId': charge.getId() }) }}"><i class="fa fa-times icon"></i>löschen</a>
+            </div>
+        </div>
+        <div class="body">
+
+            <form class="form-inline ajax" action="{{ controller.getActionUri('ajaxSeasonChargeUpdate', { 'chargeId': charge.getId() }) }}" method="post">
+
+                <label class="sr-only" for="charge{{ charge.getId() }}Charge">Preis</label>
+                <input type="number" step="0.01" class="form-control mb-2 mr-sm-2" id="charge{{ charge.getId() }}Charge" name="price" placeholder="Preis" value="{{ charge.getPrice() | number_format(2, '.', ',') }}">
+
+                <button type="submit" class="btn btn-primary mb-2">Speichern</button>
+
+            </form>
+
+        </div>
+    </div>
+{% endfor %}

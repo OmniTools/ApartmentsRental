@@ -1,0 +1,72 @@
+
+<div class="modal-body">
+    <p>Verknpüfen Sie jetzt einen Gast mit dieser Buchung.</p>
+</div>
+
+
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">bestehenden Gast suchen</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">neuen Gast anlegen</a>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+        <form method="post" action="{{ controller.getActionUri('ajaxCustomerConnect', { bookingId: booking.getId() }) }}" class="ajax">
+
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="customerId">Gast wählen</label>
+                    <select name="customerId" id="customerId" class="form-control">
+                        <option value="">bitte wählen ...</option>
+
+                        {% for customer in customers %}
+                            <option value="{{ customer.getId() }}">{{ customer.getFullName() }}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Gast verknüpfen</button>
+            </div>
+
+        </form>
+
+    </div>
+    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+        <form method="post" action="{{ controller.getActionUri('ajaxCustomerCreate', { bookingId: booking.getId() }) }}" class="ajax">
+
+            <div class="modal-body">
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="firstname">Vorname</label>
+                        <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Vorname" value="">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="lastname">Nachname</label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Nachname" value="">
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">neuen Gast anlegen</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+
+
