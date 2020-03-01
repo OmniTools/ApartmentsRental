@@ -8,7 +8,7 @@
       "homepage": "https://www.pixel-fabrik.com"
     }
   ],
-  "license": "UNLICENSED",
+  "license": "proprietary",
   "require": {
     "omnitools/core": "0.0.1",
     "omnitools/addresses": "0.0.1"
