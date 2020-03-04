@@ -28,6 +28,7 @@ class Booking extends \OmniTools\Core\Persistence\AbstractRepository
     {
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->gt('dateTo', new \DateTime()));
+        // $criteria->andWhere($criteria->expr()->neq('state', 'Cancelled'));
         $criteria->orderBy(['dateFrom' => Criteria::ASC]);
 
         return $this->matching($criteria);
@@ -41,7 +42,11 @@ class Booking extends \OmniTools\Core\Persistence\AbstractRepository
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->lte('dateFrom', $date));
         $criteria->andWhere($criteria->expr()->gte('dateTo', $date));
-        $criteria->andWhere($criteria->expr()->eq('accommodationUnit', $unit));
+
+        if ($unit !== null) {
+            $criteria->andWhere($criteria->expr()->eq('accommodationUnit', $unit));
+        }
+
 
         return $this->matching($criteria);
     }

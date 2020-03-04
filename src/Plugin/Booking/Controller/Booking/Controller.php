@@ -24,6 +24,27 @@ class Controller extends \OmniTools\Core\AbstractController
     /**
      *
      */
+    public function ajaxCancelAction(
+        Get $get,
+        \Doctrine\ORM\EntityManagerInterface $entityManager
+    ): Response
+    {
+        // Fetch booking
+        $bookingRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Booking::class);
+        $booking = $bookingRepository->find($get->get('bookingId'));
+
+        $booking->setState('Cancelled');
+
+        $entityManager->flush();
+
+        return new \OmniTools\Core\View\ResponseJson([
+            'success' => 'Die Buchung wurde storniert.'
+        ]);
+    }
+
+    /**
+     *
+     */
     public function ajaxCreateAction(
         \OmniTools\Core\Http\Post $post,
         \Doctrine\ORM\EntityManagerInterface $entityManager
