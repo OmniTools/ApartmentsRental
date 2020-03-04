@@ -82,7 +82,9 @@ class Controller extends \OmniTools\Core\AbstractController
         $entityManager->flush();
 
         return new \OmniTools\Core\View\ResponseJson([
-
+            'redirect' => $this->getActionUri('booking', [
+                'bookingId' => $booking->getId()
+            ])
         ]);
     }
 
