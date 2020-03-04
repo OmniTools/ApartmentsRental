@@ -25,7 +25,7 @@
 
     {% for request in bookings %}
         <tr class="{% if get.get('highlight') == request.getId() %}highlighted{% endif %}" data-href="{{ controller.getActionUri('booking', { 'bookingId': request.getId() }) }}">
-            <td>{{ request.getCreated().format('d.m.Y H:i') }} Uhr</td>
+            <td>{{ request.getCreated().format('d.m.Y H:i') }} Uhr <span class="badge badge-secondary">{{ request.getState() | trans }}</span></td>
             <td>{{ request.getDateFrom().format('d.m.') }}–{{ request.getDateTo().format('d.m.Y') }}</td>
             <td>{{ request.getAccommodationUnit().getTitle() }}</td>
             <td>{{ request.getCustomer().getFullName() }}</td>
@@ -50,7 +50,7 @@
 
     {% for request in bookingsArchive %}
         <tr class="{% if get.get('highlight') == request.getId() %}highlighted{% endif %}" data-href="{{ controller.getActionUri('booking', { 'bookingId': request.getId() }) }}">
-            <td>{{ request.getCreated().format('d.m.Y H:i') }} Uhr</td>
+            <td>{{ request.getCreated().format('d.m.Y H:i') }} Uhr <span class="badge badge-secondary">{{ request.getState() | trans }}</span></td>
             <td>{{ request.getDateFrom().format('d.m.') }}–{{ request.getDateTo().format('d.m.Y') }}</td>
             <td>{{ request.getAccommodationUnit().getTitle() }}</td>
             <td>{{ request.getCustomer().getFullName() }}</td>
