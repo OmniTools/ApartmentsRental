@@ -68,26 +68,11 @@ class Controller extends \OmniTools\Core\AbstractController
             throw new \Exception('Anfang und Ende der Buchung können nicht auf den gleichen Tag fallen.');
         }
 
-        $sql = 'SELECT
-            id, date_from, date_to
-        FROM
-            apartmentsrental_booking b
-        WHERE
-            b.accommodationunit_id = ' . $unit->getId() . ' AND
-            (
-                b.date_from > "' . $from->format('Y-m-d') . '" AND b.date_from < "' . $post->get('dateTo') . '" OR
-                b.date_to > "' . $post->get('dateFrom') . '" AND b.date_to < "' . $post->get('dateTo') . '"
-            )
-        LIMIT 1';
-
-        $stmt = $entityManager->getConnection()->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-
-        if (count($result)) {
-            throw new \Exception('BOOKING COLLISION');
+        if ($bookingRepository->hasBookingInDateRange($from, $to, $unit)) {
+            throw new \Exception('In diesem Datumsbereich existiert bereits eine Buchung.');
         }
 
+        // Create new booking
         $booking = new \OmniTools\ApartmentsRental\Persistence\Entity\Booking();
         $booking->setAccommodationUnit($unit);
         $booking->setDateFrom(new \DateTime($post->get('dateFrom')));
