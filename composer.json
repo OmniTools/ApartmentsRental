@@ -10,8 +10,8 @@
   ],
   "license": "proprietary",
   "require": {
-    "omnitools/core": "^0.0.1",
-    "omnitools/addresses": "^0.0.1"
+    "omnitools/core": "~0.0",
+    "omnitools/addresses": "~0.0"
   },
   "autoload": {
     "psr-4": {
