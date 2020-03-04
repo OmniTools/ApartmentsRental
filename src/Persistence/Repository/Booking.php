@@ -42,6 +42,7 @@ class Booking extends \OmniTools\Core\Persistence\AbstractRepository
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->lte('dateFrom', $date));
         $criteria->andWhere($criteria->expr()->gte('dateTo', $date));
+        $criteria->andWhere($criteria->expr()->neq('state', 'Cancelled'));
 
         if ($unit !== null) {
             $criteria->andWhere($criteria->expr()->eq('accommodationUnit', $unit));
