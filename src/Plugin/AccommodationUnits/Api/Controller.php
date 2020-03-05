@@ -63,6 +63,9 @@ class Controller extends \OmniTools\Core\Api\AbstractController
             'bookableOnline' => true
         ]);
 
+        $from = $dateFrom->format('Y-m-d');
+        $to = $dateTo->format('Y-m-d');
+
         // Fetch bookings
         $sql = 'SELECT            
             accommodationunit_id as unitId
@@ -70,9 +73,47 @@ class Controller extends \OmniTools\Core\Api\AbstractController
             apartmentsrental_booking b
         WHERE
             type = "Booking" AND
+            state != "Cancelled" AND
             (
-                b.date_from >= "' . $dateFrom->format('Y-m-d') . '" AND b.date_from <= "' . $dateTo->format('Y-m-d') . '" OR
-                b.date_to >= "' . $dateFrom->format('Y-m-d') . '" AND b.date_to <= "' . $dateTo->format('Y-m-d') . '"
+                (                
+                    /* Booking matches request exactly (E) */
+                    /*         <---- B ---->               */
+                    /*         <---- R ---->               */
+                    b.date_from = "' . $from . '" OR
+                    b.date_to = "' . $to . '"
+                )
+                OR
+                (
+                    /* Bookings lays completely inside request (F) */ 
+                    /*         <---- B ---->                       */
+                    /*      <------- R ------->                    */
+                    b.date_from > "' . $from . '" AND
+                    b.date_to < "' . $to . '"
+                )
+                OR
+                (
+                    /* Bookings lays completely inside request ( ) */ 
+                    /*         <---- B ---->                       */
+                    /*           <-- R -->                         */
+                    b.date_from < "' . $from . '" AND
+                    b.date_to > "' . $to . '"
+                )
+                OR
+                (
+                    /* End of request lays inside booking (G) */
+                    /*         <---- B ---->                  */
+                    /*      <--- R --->                       */                    
+                    b.date_from > "' . $from . '" AND
+                    b.date_from < "' . $to . '"
+                )
+                OR
+                (
+                    /* Start of request lays inside booking (H) */
+                    /*         <---- B ---->                    */
+                    /*               <--- R --->                */                    
+                    b.date_to > "' . $from . '" AND
+                    b.date_to < "' . $to . '"
+                )
             ) ';
 
         $stmt = $entityManager->getConnection()->prepare($sql);
