@@ -116,7 +116,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
-    public function getAdditionalCostsPerGuestThreshold(): int
+    public function getAdditionalCostsPerGuestThreshold(): ?int
     {
         return $this->additionalCostsPerGuestThreshold;
     }
