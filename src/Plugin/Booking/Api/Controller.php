@@ -24,7 +24,7 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         $guests = $this->getPayloadOptional('guests');
         $dogs = $this->getPayloadOptional('dogs');
 
-        $priceSegments = $unit->getPriceSegments($dateFrom, $dateTo, $dogs);
+        $priceSegments = $unit->getPriceSegments($dateFrom, $dateTo, $guests, $dogs);
 
         return $priceSegments;
     }

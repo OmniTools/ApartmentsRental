@@ -227,6 +227,8 @@ class Controller extends \OmniTools\Core\AbstractController
         $unit->setPricePerDog($post->get('pricePerDog'));
         $unit->setPriceCalculation($post->get('priceCalculation'));
         $unit->setAdditionalCosts($post->get('additionalCosts'));
+        $unit->setAdditionalCostsPerGuest($post->get('additionalCostsPerGuest'));
+        $unit->setAdditionalCostsPerGuestThreshold($post->get('additionalCostsPerGuestThreshold'));
 
         $entityManager->flush();
 

@@ -104,7 +104,7 @@ class Controller extends \OmniTools\Core\Api\AbstractController
                 'title' => $unit->getTitle(),
                 'maxGuests' => $unit->getMaxGuests(),
                 'maxDogs' => $unit->getMaxDogs(),
-                'total' => $unit->getPriceForDates($dateFrom, $dateTo, $dogs),
+                'total' => $unit->getPriceForDates($dateFrom, $dateTo, $guests, $dogs),
                 'nights' => $nights
             ];
         }
@@ -126,8 +126,9 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         $data = [
             'id' => $unit->getId(),
             'title' => $unit->getTitle(),
-            'maxGuests' => $unit->getMaxGuests(),
-            'maxDogs' => $unit->getMaxDogs()
+            'maxGuests' => (int) $unit->getMaxGuests(),
+            'maxToddlers' => (int) $unit->getMaxToddlers(),
+            'maxDogs' => (int) $unit->getMaxDogs()
         ];
 
         return $data;

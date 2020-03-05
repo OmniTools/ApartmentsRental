@@ -47,6 +47,17 @@
                         </div>
                     {% endif %}
 
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="additionalCostsPerGuest">Aufpreis pro Gast</label>
+                            <input type="number" step="0.01" class="form-control" id="additionalCostsPerGuest" name="additionalCostsPerGuest" placeholder="Aufpreis pro Gast" value="{{ unit.getAdditionalCostsPerGuest() | number_format(2, '.', ',') }}">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="additionalCostsPerGuestThreshold">ab Gast x</label>
+                            <input type="number" step="1" class="form-control" id="additionalCostsPerGuestThreshold" name="additionalCostsPerGuestThreshold" placeholder="ab Gast x" value="{{ unit.getAdditionalCostsPerGuestThreshold() }}">
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">Speichern</button>
 
                 </form>

@@ -32,7 +32,17 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     protected $additionalCosts;
 
     /**
-     * @Column(type="string", length=16, name="price_calculation", options={"unsigned"=true, "default" : "PerUnit"})
+     * @Column(type="integer", nullable=true, options={"unsigned"=true})
+     */
+    protected $additionalCostsPerGuest;
+
+    /**
+     * @Column(type="integer", nullable=true, options={"unsigned"=true})
+     */
+    protected $additionalCostsPerGuestThreshold;
+
+    /**
+     * @Column(type="string", length=16, name="price_calculation", options={"default" : "PerUnit"})
      */
     protected $priceCalculation = 'PerUnit';
 
@@ -52,7 +62,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     protected $maxDogs;
 
     /**
-     * @Column(type="boolean", nullable=false, options={"unsigned"=true, "default": false})
+     * @Column(type="boolean", nullable=false, options={"default": false})
      */
     protected $bookableOnline = false;
 
@@ -93,6 +103,22 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     public function getAdditionalCosts(): float
     {
         return $this->additionalCosts / 100;
+    }
+
+    /**
+     *
+     */
+    public function getAdditionalCostsPerGuest(): float
+    {
+        return $this->additionalCostsPerGuest / 100;
+    }
+
+    /**
+     *
+     */
+    public function getAdditionalCostsPerGuestThreshold(): int
+    {
+        return $this->additionalCostsPerGuestThreshold;
     }
 
     /**
@@ -162,7 +188,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
-    public function getPriceForDates(\DateTime $from, \DateTime $to, $dogs = 0): float
+    public function getPriceForDates(\DateTime $from, \DateTime $to, $guests = 1, $dogs = 0): float
     {
         $price = 0;
 
@@ -193,6 +219,13 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
         $price += $this->getAdditionalCosts();
 
         $price += ($dogs * $this->getPricePerDog());
+
+        if (!empty($this->getAdditionalCostsPerGuest()) and $guests >= $this->getAdditionalCostsPerGuestThreshold()) {
+
+            $additionalPayers = $guests + 1 - $this->getAdditionalCostsPerGuestThreshold();
+
+            $price += $additionalPayers * $this->getAdditionalCostsPerGuest();
+        }
 
         return $price;
     }
@@ -234,7 +267,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
-    public function getPriceSegments(\DateTime $from, \DateTime $to, $dogs = 0): array
+    public function getPriceSegments(\DateTime $from, \DateTime $to, $guests = 1, $dogs = 0): array
     {
         $list = [];
         $total = 0.0;
@@ -272,6 +305,21 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
 
             $total += $additionalCosts;
         }
+
+        if (!empty($this->getAdditionalCostsPerGuest()) and !empty($this->getAdditionalCostsPerGuestThreshold()) and $guests >= $this->getAdditionalCostsPerGuestThreshold()) {
+            
+            $additionalPayers = $guests + 1 - $this->getAdditionalCostsPerGuestThreshold();
+            $additionalCosts = $additionalPayers * $this->getAdditionalCostsPerGuest();
+
+            $list[] = [
+                'title' => 'Zusatzkosten für ' . $additionalPayers . ' weitere Gäste',
+                'total' => $additionalCosts,
+                // 'text' => $this->getTextByKey('additionalCosts') ? $this->getTextByKey('additionalCosts')->getText() : (string) null
+            ];
+
+            $total += $additionalCosts;
+        }
+
 
         return [
             'positions' => $list,
@@ -321,9 +369,25 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
-    public function setAdditionalCosts(float $costs)
+    public function setAdditionalCosts(float $costs): void
     {
         $this->additionalCosts = $costs * 100;
+    }
+
+    /**
+     *
+     */
+    public function setAdditionalCostsPerGuest(float $costs): void
+    {
+        $this->additionalCostsPerGuest = $costs * 100;
+    }
+
+    /**
+     *
+     */
+    public function setAdditionalCostsPerGuestThreshold(int $threshold): void
+    {
+        $this->additionalCostsPerGuestThreshold = $threshold;
     }
 
     /**
