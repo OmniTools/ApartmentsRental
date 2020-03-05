@@ -27,6 +27,11 @@ class Season extends \OmniTools\Core\Persistence\AbstractEntity
     protected $dateTo;
 
     /**
+     * @Column(type="integer", nullable=true, options={"unsigned"=true})
+     */
+    protected $minNights;
+    
+    /**
      *
      */
     public function getDateFrom(): \DateTime
@@ -43,6 +48,14 @@ class Season extends \OmniTools\Core\Persistence\AbstractEntity
     }
 
     /**
+     * 
+     */
+    public function getMinNights(): ?int
+    {
+        return $this->minNights;
+    }
+    
+    /**
      *
      */
     public function getTitle()
@@ -50,6 +63,14 @@ class Season extends \OmniTools\Core\Persistence\AbstractEntity
         return $this->title;
     }
 
+    /**
+     *
+     */
+    public function setMinNights(int $minNights): void
+    {
+        $this->minNights = $minNights;
+    }
+    
     /**
      *
      */
