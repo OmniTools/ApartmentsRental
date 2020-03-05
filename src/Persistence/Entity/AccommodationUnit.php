@@ -44,6 +44,11 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      * @Column(type="integer", nullable=true, options={"unsigned"=true})
      */
+    protected $maxToddlers;
+
+    /**
+     * @Column(type="integer", nullable=true, options={"unsigned"=true})
+     */
     protected $maxDogs;
 
     /**
@@ -120,6 +125,14 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     public function getMaxGuests(): ?int
     {
         return $this->maxGuests;
+    }
+
+    /**
+     *
+     */
+    public function getMaxToddlers(): ?int
+    {
+        return $this->maxToddlers;
     }
 
     /**
@@ -335,6 +348,14 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     public function setMaxGuests(int $maxGuests): void
     {
         $this->maxGuests = $maxGuests;
+    }
+
+    /**
+     *
+     */
+    public function setMaxToddlers(int $maxToddlers): void
+    {
+        $this->maxToddlers = $maxToddlers;
     }
 
     /**

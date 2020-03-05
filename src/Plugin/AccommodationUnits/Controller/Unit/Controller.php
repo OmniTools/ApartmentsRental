@@ -202,6 +202,7 @@ class Controller extends \OmniTools\Core\AbstractController
 
         $unit->setMaxGuests((int) $post->get('maxGuests'));
         $unit->setMaxDogs((int) $post->get('maxDogs') ?? 0);
+        $unit->setMaxToddlers((int) $post->get('maxToddlers') ?? 0);
         $unit->setBookableOnline(!empty($post->get('bookableOnline')));
 
         $entityManager->flush();
