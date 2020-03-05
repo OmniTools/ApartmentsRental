@@ -1,0 +1,21 @@
+
+{% if customer.getContacts() | length == 0 %}
+    <div class="body">
+        <div class="message info">Es wurden bis jetzt keine Kontaktdaten hinzufügen.</div>
+    </div>
+{% else %}
+
+    <table class="table">
+        <tbody>
+            {% for contact in customer.getContacts() %}
+                <tr class="{% if highlight == contact.getId() %}highlighted{% endif %}">
+                    <td>{{ ("Contact" ~ contact.getType()) | trans }}</td>
+                    <td>{{ contact.getValue() }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endif %}
+
+

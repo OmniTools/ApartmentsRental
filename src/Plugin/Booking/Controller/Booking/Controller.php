@@ -139,7 +139,9 @@ class Controller extends \OmniTools\Core\AbstractController
 
         $entityManager->flush();
 
-        return new \OmniTools\Core\View\ResponseJson([]);
+        return new \OmniTools\Core\View\ResponseJson([
+            'refresh' => true
+        ]);
     }
 
     /**

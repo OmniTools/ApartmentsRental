@@ -32,7 +32,7 @@
                     {%  set customer = booking.getCustomer() %}
 
                     <p>
-                        {{ customer.getFirstname() }} {{ customer.getLastname() }}<br />
+                        <a href="{{ front.getUri('ApartmentsRental', 'Customer', 'Customer', 'details', { customerId: customer.getId() }) }}">{{ customer.getFirstname() }} {{ customer.getLastname() }}</a><br />
                         {{ customer.getStreet() }} {{ customer.getStreetNumber() }}<br />
                         {{ customer.getZipcode() }} {{ customer.getCity() }}
                     </p>
