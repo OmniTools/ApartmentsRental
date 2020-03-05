@@ -22,6 +22,7 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         $dateTo = new \DateTime($this->getPayload('dateTo'));
 
         $guests = $this->getPayloadOptional('guests');
+        $children = $this->getPayloadOptional('children');
         $dogs = $this->getPayloadOptional('dogs');
 
         $priceSegments = $unit->getPriceSegments($dateFrom, $dateTo, $guests, $dogs);
@@ -40,9 +41,11 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         \OmniTools\Core\Config $config
     )
     {
-
+        // Obtain booking data
         $from = new \DateTime($this->getPayload('booking.dateFrom'));
         $to = new \DateTime($this->getPayload('booking.dateTo'));
+        $nights = $to->diff($from)->format("%a");
+        $guests = (int) $this->getPayload('booking.persons') + (int) $this->getPayloadOptional('booking.children');
 
         // Fetch unit
         $accommodationUnitRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\AccommodationUnit::class);
@@ -52,7 +55,9 @@ class Controller extends \OmniTools\Core\Api\AbstractController
             throw new \Exception('Die Wohneinheit konnte nicht geladen werden.');
         }
 
-        $guests = (int) $this->getPayload('booking.persons') + (int) $this->getPayloadOptional('booking.children');
+        if (($minNights = $unit->getMinNightsForDate($from)) > $nights) {
+            throw new \Exception(sprintf('Die Mindest-Buchungsdauer für diesen Zeitraum beträgt %s Nächte.', $minNights));
+        }
 
         if ($unit->getMaxGuests() < $guests) {
             throw new \Exception(sprintf('Es sind maximal %s Gäste in dieser Wohnung möglich.', $unit->getMaxGuests()));

@@ -164,6 +164,26 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
+    public function getMinNightsForDate(\DateTime $date): int
+    {
+        $minNights = 0;
+
+        foreach ($this->getCharges() as $charge) {
+            
+            if ($date >= $charge->getSeason()->getDateFrom() and $date <= $charge->getSeason()->getDateTo()) {
+
+                if ($minNights < $charge->getSeason()->getMinNights()) {
+                    $minNights = $charge->getSeason()->getMinNights();
+                }
+            }
+        }
+
+        return $minNights;
+    }
+
+    /**
+     *
+     */
     public function getPrice(): float
     {
         return (float) $this->price / 100;
