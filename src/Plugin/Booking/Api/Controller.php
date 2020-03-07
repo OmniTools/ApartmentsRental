@@ -46,6 +46,7 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         $to = new \DateTime($this->getPayload('booking.dateTo'));
         $nights = $to->diff($from)->format("%a");
         $guests = (int) $this->getPayload('booking.persons') + (int) $this->getPayloadOptional('booking.children');
+        $toddlers = (int) $this->getPayloadOptional('booking.toddlers');
 
         // Fetch unit
         $accommodationUnitRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\AccommodationUnit::class);
@@ -60,7 +61,11 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         }
 
         if ($unit->getMaxGuests() < $guests) {
-            throw new \Exception(sprintf('Es sind maximal %s Gäste in dieser Wohnung möglich.', $unit->getMaxGuests()));
+            throw new \Exception(sprintf('Es sind maximal %s Gäste in dieser Wohnung möglich.', (int) $unit->getMaxGuests()));
+        }
+
+        if ($toddlers > $unit->getMaxToddlers()) {
+            throw new \Exception(sprintf('Es können maximal %s Kinder im Kinderbett übernachten.', (int) $unit->getMaxToddlers()));
         }
 
         // Check if booking exists
@@ -110,9 +115,10 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         $className = '\OmniTools\ApartmentsRental\Persistence\Entity\\' . $className;
 
         $booking = new $className([
-            'persons' => $this->getPayload('booking.persons'),
-            'children' => $this->getPayloadOptional('booking.children'),
-            'dogs' => $this->getPayloadOptional('booking.dogs'),
+            'persons' => (int) $this->getPayload('booking.persons'),
+            'children' => (int) $this->getPayloadOptional('booking.children'),
+            'toddlers' => $toddlers,
+            'dogs' => (int) $this->getPayloadOptional('booking.dogs'),
             'note' => $this->getPayloadOptional('booking.note'),
         ]);
 

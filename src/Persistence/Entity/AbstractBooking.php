@@ -57,6 +57,11 @@ abstract class AbstractBooking extends \OmniTools\Core\Persistence\AbstractEntit
     /**
      * @Column(type="integer", nullable=false, options={"unsigned"=true, "default"=0})
      */
+    protected $toddlers = 0;
+
+    /**
+     * @Column(type="integer", nullable=false, options={"unsigned"=true, "default"=0})
+     */
     protected $dogs = 0;
 
     /**
@@ -156,6 +161,14 @@ abstract class AbstractBooking extends \OmniTools\Core\Persistence\AbstractEntit
     public function getState(): string
     {
         return $this->state;
+    }
+
+    /**
+     *
+     */
+    public function getToddlers(): string
+    {
+        return $this->toddlers;
     }
 
     /**
