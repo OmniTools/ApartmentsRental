@@ -26,6 +26,7 @@ class Controller extends \OmniTools\Core\AbstractController
      */
     public function ajaxCancelAction(
         Get $get,
+        \OmniTools\Core\LoggerService $loggerService,
         \Doctrine\ORM\EntityManagerInterface $entityManager
     ): Response
     {
@@ -34,6 +35,9 @@ class Controller extends \OmniTools\Core\AbstractController
         $booking = $bookingRepository->find($get->get('bookingId'));
 
         $booking->setState('Cancelled');
+
+        // Log customer creation
+        $loggerService->log($booking, 'Cancelled');
 
         $entityManager->flush();
 
@@ -271,6 +275,7 @@ class Controller extends \OmniTools\Core\AbstractController
      */
     public function ajaxRequestConvertAction(
         Get $get,
+        \OmniTools\Core\View\Front $front,
         \Doctrine\ORM\EntityManagerInterface $entityManager,
         \OmniTools\Core\LoggerService $loggerService
     ): Response
@@ -279,8 +284,18 @@ class Controller extends \OmniTools\Core\AbstractController
         $requestRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Request::class);
         $request = $requestRepository->find($get->get('requestId'));
 
+        if (empty($request)) {
+            throw new \Exception('Die Anfrage konnte nicht geladen werden.');
+        }
+
         $sql = "UPDATE apartmentsrental_booking SET type = 'Booking' WHERE id = " . $request->getId() . " LIMIT 1";
         $entityManager->getConnection()->exec($sql);
+
+        // Log approval
+        $loggerService->log($request, 'Approved');
+
+        // Create flash message
+        $front->flash('Die Anfrage wurde bestätigt.');
 
         return new \OmniTools\Core\View\ResponseJson([
             'redirect' => $this->getActionUri('booking', [
@@ -293,8 +308,9 @@ class Controller extends \OmniTools\Core\AbstractController
      *
      */
     public function bookingAction(
-        \OmniTools\Core\View $view,
         Get $get,
+        \OmniTools\Core\View $view,
+        \OmniTools\Core\LoggerService $loggerService,
         \Doctrine\ORM\EntityManagerInterface $entityManager
     ): Response
     {
@@ -334,7 +350,6 @@ class Controller extends \OmniTools\Core\AbstractController
         \Doctrine\ORM\EntityManagerInterface $entityManager
     ): Response
     {
-
         // Fetch requests
         $requestRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Request::class);
         $request = $requestRepository->find($get->get('requestId'));
@@ -342,8 +357,6 @@ class Controller extends \OmniTools\Core\AbstractController
         if ($request === null) {
             throw new \OmniTools\Core\Exception\InvalidContext('Die Buchungsanfrage konnte nicht geladen werden.');
         }
-
-        // $bookingsRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Booking::class);
 
         $isValid = $requestRepository->isRequestConvertable($request);
 
