@@ -152,12 +152,16 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         // Send the message
         $mailer->send($message);
 
-        // Re-use message
-        $message->clearTo();
-        $message->addTo('bruening@mac.com');
-        $message->addTo('bruening@pixel-fabrik.com');
+        if (!empty($emails = $config->get('ApartmentsRental.Booking.recipients'))) {
 
-        $mailer->send($message);
+            foreach ($emails as $email) {
+
+                // Re-use message
+                $message->clearTo();
+                $message->addTo($email);
+                $mailer->send($message);
+            }
+        }
 
         $entityManager->flush();
 
