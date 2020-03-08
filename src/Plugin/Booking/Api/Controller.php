@@ -25,6 +25,12 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         $children = $this->getPayloadOptional('children');
         $dogs = $this->getPayloadOptional('dogs');
 
+        $guests = (int) $guests + (int) $children;
+
+        if ($guests > $unit->getMaxGuests()) {
+            throw new \Exception('Die maximale Anzahl an Gästen ist überschritten worden.');
+        }
+
         $priceSegments = $unit->getPriceSegments($dateFrom, $dateTo, $guests, $dogs);
 
         return $priceSegments;

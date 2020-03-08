@@ -126,6 +126,14 @@ abstract class AbstractBooking extends \OmniTools\Core\Persistence\AbstractEntit
     /**
      *
      */
+    public function getGuestsCount(): int
+    {
+        return $this->children + $this->persons;
+    }
+
+    /**
+     *
+     */
     public function getMailTemplate(): string
     {
         return $this->mailTemplate;

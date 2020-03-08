@@ -132,6 +132,20 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
+    public function getChargeForSeason(Season $season): ?AccommodationUnitCharge
+    {
+        foreach ($this->getCharges() as $charge) {
+            if ($charge->getSeason() == $season) {
+                return $charge;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     */
     public function getCharges()
     {
         return $this->charges;
@@ -302,6 +316,8 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
 
         $total += $bookingFee;
 
+        $nights = $to->diff($from)->format("%a");
+
         // Calculate fee for dogs
         if ($dogs > 0) {
 
@@ -309,7 +325,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
 
             $list[] = [
                 'title' => 'Gebühr für Hunde',
-                'total' => $dogsFee
+                'total' => $dogsFee * $nights
             ];
 
             $total += $dogsFee;
@@ -333,7 +349,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
 
             $list[] = [
                 'title' => 'Zusatzkosten für ' . $additionalPayers . ' weitere Gäste',
-                'total' => $additionalCosts,
+                'total' => $additionalCosts * $nights,
                 // 'text' => $this->getTextByKey('additionalCosts') ? $this->getTextByKey('additionalCosts')->getText() : (string) null
             ];
 
@@ -352,7 +368,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
      */
     public function getPriceSegmentsForBooking(\OmniTools\ApartmentsRental\Persistence\Entity\AbstractBooking $booking): array
     {
-        return $this->getPriceSegments($booking->getDateFrom(), $booking->getDateTo(), $booking->getDogs());
+        return $this->getPriceSegments($booking->getDateFrom(), $booking->getDateTo(), $booking->getGuestsCount(), $booking->getDogs());
     }
 
     /**
@@ -384,6 +400,20 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     *
+     */
+    public function hasChargeForSeason(Season $season): bool
+    {
+        foreach ($this->getCharges() as $charge) {
+            if ($charge->getSeason() == $season) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
