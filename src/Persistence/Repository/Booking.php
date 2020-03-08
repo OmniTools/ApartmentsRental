@@ -82,6 +82,7 @@ class Booking extends \OmniTools\Core\Persistence\AbstractRepository
         FROM
             apartmentsrental_booking b
         WHERE
+            b.state != "Cancelled" AND 
             b.type = "Booking" AND';
 
         if ($unit !== null) {
