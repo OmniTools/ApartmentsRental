@@ -217,7 +217,7 @@ class Controller extends \OmniTools\Core\AbstractController
 
         // Fetch seasons
         $seasonsRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Season::class);
-        $seasons = $seasonsRepository->findBy([]);
+        $seasons = $seasonsRepository->findBy([], ['dateFrom' => 'ASC']);
 
         return $this->render(null, [
             'units' => $units,
