@@ -7,7 +7,7 @@
     <div class="portlet" data-charge="{{ charge.getId() }}">
         <div class="head">
             <div class="label">
-                <h3>Saison „{{ charge.getSeason().getTitle() }}“ {{ charge.getSeason().getDateFrom().format('d.m.') }}–{{ charge.getSeason().getDateTo().format('d.m.') }}</h3>
+                <h3>Saison „{{ charge.getSeason().getTitle() }}“ {{ charge.getSeason().getDateFrom().format('d.m.') }}–{{ charge.getSeason().getDateTo().format('d.m.Y') }}</h3>
             </div>
             <div class="toolbar">
                 <a class="danger ajax" data-confirm="Soll dieser Saison-Preis wirklich gelöscht werden?" href="{{ controller.getActionUri('ajaxSeasonChargeDelete', { 'chargeId': charge.getId() }) }}"><i class="fa fa-times icon"></i>löschen</a>

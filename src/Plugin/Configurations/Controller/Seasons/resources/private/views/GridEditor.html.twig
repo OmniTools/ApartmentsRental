@@ -7,37 +7,44 @@
 
 <form method="post" action="{{ controller.getUri('ajaxUpdateCharges') }}" class="ajax">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Wohneinheit</th>
+    <div class="table-responsive">
 
-                {% for season in seasons %}
-                    <th>{{ season.getTitle() }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-
-            {% for unit in units %}
-
+        <table class="table">
+            <thead>
                 <tr>
-                    <td><a href="{{ front.getUri('ApartmentsRental', 'AccommodationUnits', 'Unit', 'details', { unitId: unit.getId() }) }}">{{ unit.getTitle() }}</a></td>
+                    <th>Wohneinheit</th>
 
                     {% for season in seasons %}
-                        <td width="150">
-                            {%  if unit.hasChargeForSeason(season) %}
-                                <input type="number" step="0.01" name="charge[{{ unit.getChargeForSeason(season).getId() }}]" value="{{ unit.getChargeForSeason(season).getPrice() | number_format(2, '.', ',') }}" class="form-control" />
-                            {% endif %}
-                        </td>
+                        <th>
+                            {{ season.getTitle() }}<br />
+                            {{ season.getDateFrom().format('Y') }}
+                        </th>
                     {% endfor %}
-
                 </tr>
+            </thead>
+            <tbody>
 
-            {% endfor %}
+                {% for unit in units %}
 
-        </tbody>
-    </table>
+                    <tr>
+                        <td nowrap><a href="{{ front.getUri('ApartmentsRental', 'AccommodationUnits', 'Unit', 'details', { unitId: unit.getId() }) }}">{{ unit.getTitle() }}</a></td>
+
+                        {% for season in seasons %}
+                            <td width="150">
+                                {%  if unit.hasChargeForSeason(season) %}
+                                    <input type="number" step="0.01" name="charge[{{ unit.getChargeForSeason(season).getId() }}]" value="{{ unit.getChargeForSeason(season).getPrice() | number_format(2, '.', ',') }}" class="form-control" />
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
 
     <button type="submit" class="btn btn-primary">Speichern</button>
 
