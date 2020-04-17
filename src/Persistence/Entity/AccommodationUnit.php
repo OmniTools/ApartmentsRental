@@ -267,15 +267,15 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
-    public function getPriceForDateRange(\DateTime $from, \DateTime $to): float
+    public function getPriceForDateRange(\DateTime $from, \DateTime $to): ?float
     {
-        $price = 0;
+        $price = (float) null;
 
         $from = clone $from;
 
         while ($from < $to) {
 
-            $dayFee = $this->getPrice();
+            $dayFee = null;
 
             foreach ($this->getCharges() as $charge) {
 
@@ -288,6 +288,10 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
                 }
 
                 $dayFee = $charge->getPrice();
+            }
+
+            if ($dayFee === null) {
+                return null;
             }
 
             $price += $dayFee;
@@ -308,6 +312,12 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
 
         // Calculate booking fee
         $bookingFee = $this->getPriceForDateRange($from, $to);
+
+        if ($bookingFee === null) {
+            return [
+                'error' => 'SeasonChargeMissing'
+            ];
+        }
 
         $list[] = [
             'title' => 'Buchungsgebühr',
