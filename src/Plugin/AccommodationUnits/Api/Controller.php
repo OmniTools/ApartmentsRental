@@ -31,6 +31,7 @@ class Controller extends \OmniTools\Core\Api\AbstractController
             apartmentsrental_booking b
         WHERE
             accommodationunit_id = ' . $unit->getId() . ' AND
+            b.state != "Cancelled" AND 
             b.type = "Booking" AND
             (
                 b.date_from >= "' . $dateFrom->format('Y-m-d') . '" AND b.date_from <= "' . $dateTo->format('Y-m-d') . '" OR
