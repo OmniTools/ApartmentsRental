@@ -222,19 +222,21 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
-    public function getPriceForDates(\DateTime $from, \DateTime $to, $guests = 1, $dogs = 0): float
+    public function getPriceForDates(\DateTime $from, \DateTime $to, $guests = 1, $dogs = 0): ?float
     {
         $price = 0;
+        $days = 0;
 
         $from = clone $from;
 
         while ($from < $to) {
 
-            $dayFee = $this->getPrice();
+            $dayFee = null;
+            ++$days;
 
             foreach ($this->getCharges() as $charge) {
 
-                if ($from < $charge->getSeason()->getDateFrom() or $to > $charge->getSeason()->getDateTo()) {
+                if ($from < $charge->getSeason()->getDateFrom() or $from > $charge->getSeason()->getDateTo()) {
                     continue;
                 }
 
@@ -243,6 +245,10 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
                 }
 
                 $dayFee = $charge->getPrice();
+            }
+
+            if ($dayFee === null) {
+                return null;
             }
 
             $price += $dayFee;
@@ -258,7 +264,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
 
             $additionalPayers = $guests + 1 - $this->getAdditionalCostsPerGuestThreshold();
 
-            $price += $additionalPayers * $this->getAdditionalCostsPerGuest();
+            $price += $additionalPayers * $this->getAdditionalCostsPerGuest() * $days;
         }
 
         return $price;
@@ -279,7 +285,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
 
             foreach ($this->getCharges() as $charge) {
 
-                if ($from < $charge->getSeason()->getDateFrom() or $to > $charge->getSeason()->getDateTo()) {
+                if ($from < $charge->getSeason()->getDateFrom() or $from > $charge->getSeason()->getDateTo()) {
                     continue;
                 }
 
