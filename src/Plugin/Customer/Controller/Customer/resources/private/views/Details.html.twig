@@ -35,6 +35,67 @@
             </div>
         </div>
 
+
+        <div class="portlet">
+            <div class="head">
+                <div class="label">
+                    <h3>Kontaktdaten</h3>
+                </div>
+                <div class="toolbar">
+
+                    <a title="Kontaktdaten hinzufügen" class="icon ajax" href="{{ controller.getActionUri('ajaxModalContactCompose', { customerId: customer.getId() }) }}"><i class="fa fa-plus-circle"></i></a>
+
+                </div>
+            </div>
+
+            <div id="contactsReceiver">
+                {{ front.renderPartial('ApartmentsRental/Plugin/Customer/Controller/Customer/Partial/ListContacts', { controller: controller, customer: customer }) | raw }}
+            </div>
+
+        </div>
+
+    </div>
+    <div class="col-md-6">
+
+        <div class="portlet">
+            <div class="head">
+                <div class="label">
+                    <h3>interne Notiz</h3>
+                </div>
+            </div>
+            <div class="body">
+
+                <form method="post" action="{{ controller.getActionUri('ajaxInternalNoteUpdate', { customerId: customer.getId() }) }}" class="ajax">
+
+                    <div class="form-group">
+                        <textarea class="form-control" id="noteInternal" name="noteInternal" rows="6">{{ customer.getNoteInternal() }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+
+                </form>
+
+            </div>
+        </div>
+
+        <div class="portlet">
+            <div class="head">
+                <div class="label">
+                    <h3>Buchungen</h3>
+                </div>
+            </div>
+
+            <table class="table">
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr data-href="{{ front.getUri('ApartmentsRental', 'Booking', 'Booking', 'booking', { bookingId: booking.getId() }) }}">
+                            <td>{{ booking.getDateFrom().format('d.m.Y') }}–{{ booking.getDateTo().format('d.m.Y') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </div>
 

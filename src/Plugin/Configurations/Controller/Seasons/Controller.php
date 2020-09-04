@@ -81,10 +81,10 @@ class Controller extends \OmniTools\Core\AbstractController
      *
      */
     public function ajaxUpdateAction(
-        \Doctrine\ORM\EntityManagerInterface $entityManager,
+        Get $get,
         Post $post,
         \OmniTools\Core\View\Front $front,
-        Get $get
+        \Doctrine\ORM\EntityManagerInterface $entityManager
     ): Response
     {
         // Fetch season
@@ -114,6 +114,27 @@ class Controller extends \OmniTools\Core\AbstractController
     /**
      *
      */
+    public function ajaxUpdateChargesAction(
+        Post $post,
+        \Doctrine\ORM\EntityManagerInterface $entityManager
+    ): Response
+    {
+        $chargesRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\AccommodationUnitCharge::class);
+
+        foreach ($post->get('charge') as $chargeId => $value) {
+
+            $charge = $chargesRepository->find($chargeId);
+            $charge->setPrice($value);
+        }
+
+        $entityManager->flush();
+
+        return new \OmniTools\Core\View\ResponseJson;
+    }
+
+    /**
+     *
+     */
     public function ajaxModalComposeAction(
         \OmniTools\Core\View $view
     ): Response
@@ -138,14 +159,71 @@ class Controller extends \OmniTools\Core\AbstractController
 
         $view->assign('season', $season);
 
-
         return new \OmniTools\Core\View\ResponseJson([
             'html' => $view->render('AjaxModalEdit.html.twig')
         ]);
     }
 
+    /**
+     *
+     */
+    public function generateAllChargesAction(
+        \Doctrine\ORM\EntityManagerInterface $entityManager
+    ): Response
+    {
+        // Fetch season
+        $seasonsRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Season::class);
+        $seasons = $seasonsRepository->findBy([]);
 
+        // Fetch units
+        $accommodationUnitRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\AccommodationUnit::class);
+        $units = $accommodationUnitRepository->findBy([]);
 
+        foreach ($units as $unit) {
+
+            foreach ($seasons as $season) {
+
+                if (!$unit->hasChargeForSeason($season)) {
+
+                    // Compose new season charge
+                    $charge = new \OmniTools\ApartmentsRental\Persistence\Entity\AccommodationUnitCharge;
+                    $charge->setAccommodationUnit($unit);
+                    $charge->setSeason($season);
+
+                    // Persist season charge
+                    $entityManager->persist($charge);
+                }
+            }
+        }
+
+        $entityManager->flush();
+
+        $front->flash('Die Konfiguration wurde übertragen.');
+
+        return new \OmniTools\Core\View\ResponseRedirect($this->getUri('gridEditor'));
+    }
+
+    /**
+     *
+     */
+    public function gridEditorAction(
+        \OmniTools\Core\View\Front $front,
+        \Doctrine\ORM\EntityManagerInterface $entityManager
+    ): Response
+    {
+        // Fetch units
+        $accommodationUnitRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\AccommodationUnit::class);
+        $units = $accommodationUnitRepository->findBy([]);
+
+        // Fetch seasons
+        $seasonsRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Season::class);
+        $seasons = $seasonsRepository->findBy([], ['dateFrom' => 'ASC']);
+
+        return $this->render(null, [
+            'units' => $units,
+            'seasons' => $seasons
+        ]);
+    }
 
     /**
      *

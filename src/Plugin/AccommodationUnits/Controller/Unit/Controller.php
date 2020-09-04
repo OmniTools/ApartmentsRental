@@ -202,6 +202,7 @@ class Controller extends \OmniTools\Core\AbstractController
 
         $unit->setMaxGuests((int) $post->get('maxGuests'));
         $unit->setMaxDogs((int) $post->get('maxDogs') ?? 0);
+        $unit->setMaxToddlers((int) $post->get('maxToddlers') ?? 0);
         $unit->setBookableOnline(!empty($post->get('bookableOnline')));
 
         $entityManager->flush();
@@ -226,6 +227,8 @@ class Controller extends \OmniTools\Core\AbstractController
         $unit->setPricePerDog($post->get('pricePerDog'));
         $unit->setPriceCalculation($post->get('priceCalculation'));
         $unit->setAdditionalCosts($post->get('additionalCosts'));
+        $unit->setAdditionalCostsPerGuest($post->get('additionalCostsPerGuest'));
+        $unit->setAdditionalCostsPerGuestThreshold($post->get('additionalCostsPerGuestThreshold'));
 
         $entityManager->flush();
 

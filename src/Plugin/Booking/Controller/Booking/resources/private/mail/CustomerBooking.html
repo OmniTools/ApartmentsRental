@@ -86,8 +86,13 @@
                                 <td>{{ booking.getChildren() }}</td>
                             </tr>
                             <tr>
+                                <td>Kinder im Kinderbett</td>
+                                <td>{{ booking.getToddlers() }}</td>
+                            </tr>
+
+                            <tr>
                                 <td>Haustiere</td>
-                                <td>{{ booking.getPets() }}</td>
+                                <td>{{ booking.getDogs() }}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -136,28 +141,38 @@
 
                         {% set costs = unit.getPriceSegmentsForBooking(booking) %}
 
-                        <table class="table">
-                            <tbody>
-                                {% for position in costs.positions %}
-                                    <tr>
-                                        <td>
-                                            {{ position.title }}
+                        {% if costs.error %}
 
-                                            {% if position.text %}
-                                                <div style="color: #666; font-size: 14px">{{ position.text | nl2br }}</div>
-                                            {% endif %}
-                                        </td>
-                                        <td class="right">{{ position.total | number_format(2, ",", ".") }} EUR</td>
+                            {% if costs.error == 'SeasonChargeMissing' %}
+                                <p>Preis nur auf Anfrage.</p>
+                            {% endif %}
+
+                        {% else %}
+
+                            <table class="table">
+                                <tbody>
+                                    {% for position in costs.positions %}
+                                        <tr>
+                                            <td>
+                                                {{ position.title }}
+
+                                                {% if position.text %}
+                                                    <div style="color: #666; font-size: 14px">{{ position.text | nl2br }}</div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="right">{{ position.total | number_format(2, ",", ".") }} EUR</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td class="right"><b>{{ costs.total | number_format(2, ",", ".") }} EUR</b></td>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td></td>
-                                    <td class="right"><b>{{ costs.total | number_format(2, ",", ".") }} EUR</b></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                </tfoot>
+                            </table>
+
+                        {% endif %}
 
                     </td>
                 </tr>

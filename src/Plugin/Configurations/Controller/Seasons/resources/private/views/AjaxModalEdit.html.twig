@@ -25,6 +25,12 @@
             <label for="dateTo">Datum bis</label>
             <input type="date" class="form-control" id="dateTo" name="season[dateTo]" value="{{ season.getDateTo().format('Y-m-d') }}">
         </div>
+        <div class="form-group">
+            <label for="minNights">min. Nächte</label>
+            <input type="number" step="1" class="form-control" id="minNights" aria-describedby="minNightsHelp" name="season[minNights]" placeholder="min. Nächte" value="{{ season.getMinNights() }}">
+            <small id="minNightsHelp" class="form-text text-muted">Mindestanzahl an zu buchenden Nächsten am Stück in dieser Saison.</small>
+        </div>
+
     </div>
     <div class="modal-footer">
         <button type="submit" class="btn btn-primary">Speichern</button>

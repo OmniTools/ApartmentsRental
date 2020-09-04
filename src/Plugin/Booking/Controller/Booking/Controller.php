@@ -24,6 +24,31 @@ class Controller extends \OmniTools\Core\AbstractController
     /**
      *
      */
+    public function ajaxCancelAction(
+        Get $get,
+        \OmniTools\Core\LoggerService $loggerService,
+        \Doctrine\ORM\EntityManagerInterface $entityManager
+    ): Response
+    {
+        // Fetch booking
+        $bookingRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Booking::class);
+        $booking = $bookingRepository->find($get->get('bookingId'));
+
+        $booking->setState('Cancelled');
+
+        // Log customer creation
+        $loggerService->log($booking, 'Cancelled');
+
+        $entityManager->flush();
+
+        return new \OmniTools\Core\View\ResponseJson([
+            'success' => 'Die Buchung wurde storniert.'
+        ]);
+    }
+
+    /**
+     *
+     */
     public function ajaxCreateAction(
         \OmniTools\Core\Http\Post $post,
         \Doctrine\ORM\EntityManagerInterface $entityManager
@@ -47,26 +72,11 @@ class Controller extends \OmniTools\Core\AbstractController
             throw new \Exception('Anfang und Ende der Buchung können nicht auf den gleichen Tag fallen.');
         }
 
-        $sql = 'SELECT
-            id, date_from, date_to
-        FROM
-            apartmentsrental_booking b
-        WHERE
-            b.accommodationunit_id = ' . $unit->getId() . ' AND
-            (
-                b.date_from > "' . $from->format('Y-m-d') . '" AND b.date_from < "' . $post->get('dateTo') . '" OR
-                b.date_to > "' . $post->get('dateFrom') . '" AND b.date_to < "' . $post->get('dateTo') . '"
-            )
-        LIMIT 1';
-
-        $stmt = $entityManager->getConnection()->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-
-        if (count($result)) {
-            throw new \Exception('BOOKING COLLISION');
+        if ($bookingRepository->hasBookingInDateRange($from, $to, $unit)) {
+            throw new \Exception('In diesem Datumsbereich existiert bereits eine Buchung.');
         }
 
+        // Create new booking
         $booking = new \OmniTools\ApartmentsRental\Persistence\Entity\Booking();
         $booking->setAccommodationUnit($unit);
         $booking->setDateFrom(new \DateTime($post->get('dateFrom')));
@@ -76,7 +86,9 @@ class Controller extends \OmniTools\Core\AbstractController
         $entityManager->flush();
 
         return new \OmniTools\Core\View\ResponseJson([
-
+            'redirect' => $this->getActionUri('booking', [
+                'bookingId' => $booking->getId()
+            ])
         ]);
     }
 
@@ -131,7 +143,9 @@ class Controller extends \OmniTools\Core\AbstractController
 
         $entityManager->flush();
 
-        return new \OmniTools\Core\View\ResponseJson([]);
+        return new \OmniTools\Core\View\ResponseJson([
+            'refresh' => true
+        ]);
     }
 
     /**
@@ -261,6 +275,7 @@ class Controller extends \OmniTools\Core\AbstractController
      */
     public function ajaxRequestConvertAction(
         Get $get,
+        \OmniTools\Core\View\Front $front,
         \Doctrine\ORM\EntityManagerInterface $entityManager,
         \OmniTools\Core\LoggerService $loggerService
     ): Response
@@ -269,8 +284,18 @@ class Controller extends \OmniTools\Core\AbstractController
         $requestRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Request::class);
         $request = $requestRepository->find($get->get('requestId'));
 
+        if (empty($request)) {
+            throw new \Exception('Die Anfrage konnte nicht geladen werden.');
+        }
+
         $sql = "UPDATE apartmentsrental_booking SET type = 'Booking' WHERE id = " . $request->getId() . " LIMIT 1";
         $entityManager->getConnection()->exec($sql);
+
+        // Log approval
+        $loggerService->log($request, 'Approved');
+
+        // Create flash message
+        $front->flash('Die Anfrage wurde bestätigt.');
 
         return new \OmniTools\Core\View\ResponseJson([
             'redirect' => $this->getActionUri('booking', [
@@ -283,8 +308,9 @@ class Controller extends \OmniTools\Core\AbstractController
      *
      */
     public function bookingAction(
-        \OmniTools\Core\View $view,
         Get $get,
+        \OmniTools\Core\View $view,
+        \OmniTools\Core\LoggerService $loggerService,
         \Doctrine\ORM\EntityManagerInterface $entityManager
     ): Response
     {
@@ -324,7 +350,6 @@ class Controller extends \OmniTools\Core\AbstractController
         \Doctrine\ORM\EntityManagerInterface $entityManager
     ): Response
     {
-
         // Fetch requests
         $requestRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Request::class);
         $request = $requestRepository->find($get->get('requestId'));
@@ -332,8 +357,6 @@ class Controller extends \OmniTools\Core\AbstractController
         if ($request === null) {
             throw new \OmniTools\Core\Exception\InvalidContext('Die Buchungsanfrage konnte nicht geladen werden.');
         }
-
-        // $bookingsRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\Booking::class);
 
         $isValid = $requestRepository->isRequestConvertable($request);
 

@@ -22,9 +22,16 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         $dateTo = new \DateTime($this->getPayload('dateTo'));
 
         $guests = $this->getPayloadOptional('guests');
+        $children = $this->getPayloadOptional('children');
         $dogs = $this->getPayloadOptional('dogs');
 
-        $priceSegments = $unit->getPriceSegments($dateFrom, $dateTo, $dogs);
+        $guests = (int) $guests + (int) $children;
+
+        if ($guests > $unit->getMaxGuests()) {
+            throw new \Exception('Die maximale Anzahl an Gästen ist überschritten worden.');
+        }
+
+        $priceSegments = $unit->getPriceSegments($dateFrom, $dateTo, $guests, $dogs);
 
         return $priceSegments;
     }
@@ -40,9 +47,12 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         \OmniTools\Core\Config $config
     )
     {
-
+        // Obtain booking data
         $from = new \DateTime($this->getPayload('booking.dateFrom'));
         $to = new \DateTime($this->getPayload('booking.dateTo'));
+        $nights = $to->diff($from)->format("%a");
+        $guests = (int) $this->getPayload('booking.persons') + (int) $this->getPayloadOptional('booking.children');
+        $toddlers = (int) $this->getPayloadOptional('booking.toddlers');
 
         // Fetch unit
         $accommodationUnitRepository = $entityManager->getRepository(\OmniTools\ApartmentsRental\Persistence\Entity\AccommodationUnit::class);
@@ -52,10 +62,16 @@ class Controller extends \OmniTools\Core\Api\AbstractController
             throw new \Exception('Die Wohneinheit konnte nicht geladen werden.');
         }
 
-        $guests = (int) $this->getPayload('booking.persons') + (int) $this->getPayloadOptional('booking.children');
+        if (($minNights = $unit->getMinNightsForDate($from)) > $nights) {
+            throw new \Exception(sprintf('Die Mindest-Buchungsdauer für diesen Zeitraum beträgt %s Nächte.', $minNights));
+        }
 
         if ($unit->getMaxGuests() < $guests) {
-            throw new \Exception(sprintf('Es sind maximal %s Gäste in dieser Wohnung möglich.', $unit->getMaxGuests()));
+            throw new \Exception(sprintf('Es sind maximal %s Gäste in dieser Wohnung möglich.', (int) $unit->getMaxGuests()));
+        }
+
+        if ($toddlers > $unit->getMaxToddlers()) {
+            throw new \Exception(sprintf('Es können maximal %s Kinder im Kinderbett übernachten.', (int) $unit->getMaxToddlers()));
         }
 
         // Check if booking exists
@@ -105,9 +121,10 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         $className = '\OmniTools\ApartmentsRental\Persistence\Entity\\' . $className;
 
         $booking = new $className([
-            'persons' => $this->getPayload('booking.persons'),
-            'children' => $this->getPayloadOptional('booking.children'),
-            'dogs' => $this->getPayloadOptional('booking.dogs'),
+            'persons' => (int) $this->getPayload('booking.persons'),
+            'children' => (int) $this->getPayloadOptional('booking.children'),
+            'toddlers' => $toddlers,
+            'dogs' => (int) $this->getPayloadOptional('booking.dogs'),
             'note' => $this->getPayloadOptional('booking.note'),
         ]);
 
@@ -141,12 +158,16 @@ class Controller extends \OmniTools\Core\Api\AbstractController
         // Send the message
         $mailer->send($message);
 
-        // Re-use message
-        $message->clearTo();
-        $message->addTo('bruening@mac.com');
-        $message->addTo('bruening@pixel-fabrik.com');
+        if (!empty($emails = $config->get('ApartmentsRental.Booking.recipients'))) {
 
-        $mailer->send($message);
+            foreach ($emails as $email) {
+
+                // Re-use message
+                $message->clearTo();
+                $message->addTo($email);
+                $mailer->send($message);
+            }
+        }
 
         $entityManager->flush();
 

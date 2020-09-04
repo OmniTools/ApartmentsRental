@@ -77,6 +77,7 @@ class Controller extends \OmniTools\Core\AbstractController
             apartmentsrental_booking b
         WHERE
             type = "Booking" AND
+            state != "Cancelled" AND
             (
                 (                
                     /* Booking matches request exactly (E) */

@@ -7,7 +7,10 @@
     ],
     'menu': {
         'action': 'booking'
-    }
+    },
+    'buttons': [
+        [ '', 'Core/Utility/Logger/ajaxModalHistory?entityId=' ~ booking.getId() ~ '&entity=' ~ booking.getClassName(), 'fa-history', 'ajax', 'Verlauf' ]
+    ],
 }) }}
 
 <div class="row">
@@ -32,7 +35,7 @@
                     {%  set customer = booking.getCustomer() %}
 
                     <p>
-                        {{ customer.getFirstname() }} {{ customer.getLastname() }}<br />
+                        <a href="{{ front.getUri('ApartmentsRental', 'Customer', 'Customer', 'details', { customerId: customer.getId() }) }}">{{ customer.getFirstname() }} {{ customer.getLastname() }}</a><br />
                         {{ customer.getStreet() }} {{ customer.getStreetNumber() }}<br />
                         {{ customer.getZipcode() }} {{ customer.getCity() }}
                     </p>
@@ -75,6 +78,10 @@
                     <tr>
                         <td>Kinder</td>
                         <td>{{ booking.getChildren() }}</td>
+                    </tr>
+                    <tr>
+                        <td>Kinder im Kinderbett</td>
+                        <td>{{ booking.getToddlers() }}</td>
                     </tr>
                     <tr>
                         <td>Hunde</td>

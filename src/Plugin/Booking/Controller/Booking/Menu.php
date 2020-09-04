@@ -18,7 +18,9 @@ class Menu extends \OmniTools\Core\View\AbstractMenu
     /**
      *
      */
-    public function generateBooking(): array
+    public function generateBooking(
+        \OmniTools\Core\Http\Get $get
+    ): array
     {
         return [
             new \OmniTools\Core\View\MenuItem(
@@ -28,7 +30,7 @@ class Menu extends \OmniTools\Core\View\AbstractMenu
             ),
             new \OmniTools\Core\View\MenuItem(
                 'stornieren',
-                'ApartmentsRental/Booking/Dashboard/index',
+                'ApartmentsRental/Booking/Booking/ajaxCancel?bookingId=' . $get->get('bookingId'),
                 'fa-times',
                 'ajax',
                 'sdfsdf',

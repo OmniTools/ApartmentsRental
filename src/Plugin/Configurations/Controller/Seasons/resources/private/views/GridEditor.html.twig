@@ -1,0 +1,51 @@
+{{ front.config({
+    'title': 'Grid-Editor',
+    'buttons': [
+        [ 'Konfiguration auf alle übertragen', 'ApartmentsRental/Configurations/Seasons/generateAllCharges', null, 'btn btn-info' ]
+    ]
+}) }}
+
+<form method="post" action="{{ controller.getUri('ajaxUpdateCharges') }}" class="ajax">
+
+    <div class="table-responsive">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Wohneinheit</th>
+
+                    {% for season in seasons %}
+                        <th>
+                            {{ season.getTitle() }}<br />
+                            {{ season.getDateFrom().format('Y') }}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for unit in units %}
+
+                    <tr>
+                        <td nowrap><a href="{{ front.getUri('ApartmentsRental', 'AccommodationUnits', 'Unit', 'details', { unitId: unit.getId() }) }}">{{ unit.getTitle() }}</a></td>
+
+                        {% for season in seasons %}
+                            <td width="150">
+                                {%  if unit.hasChargeForSeason(season) %}
+                                    <input type="number" step="0.01" name="charge[{{ unit.getChargeForSeason(season).getId() }}]" value="{{ unit.getChargeForSeason(season).getPrice() | number_format(2, '.', ',') }}" class="form-control" />
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Speichern</button>
+
+</form>

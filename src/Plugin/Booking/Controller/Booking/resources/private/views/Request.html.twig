@@ -41,7 +41,7 @@
                     <tr>
                         <td>Status</td>
                         <td>
-                            {{ ('State' ~ request.getState()) | trans }}
+                            {{ request.getState() | trans }}
                         </td>
                     </tr>
                     <tr>
@@ -63,6 +63,7 @@
                         <td>
                             {{ request.getPersons() }} Personen<br />
                             {{ request.getChildren() }} Kinder<br />
+                            {{ request.getToddlers() }} Kinder im Kinderbett<br />
                             {{ request.getDogs() }} Hunde
                         </td>
                     </tr>

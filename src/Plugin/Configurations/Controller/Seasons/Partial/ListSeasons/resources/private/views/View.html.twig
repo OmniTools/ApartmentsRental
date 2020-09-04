@@ -21,19 +21,24 @@
             </h4>
 
             <div class="row">
-                <div class="col-4">
-
+                <div class="col-3">
                     <p>
                         <b>Datum von</b><br />
                         {{ season.getDateFrom().format('d.m.Y') }}
                     </p>
+                </div>
+                <div class="col-3">
                     <p>
                         <b>Datum bis</b><br />
                         {{ season.getDateTo().format('d.m.Y') }}
                     </p>
-
                 </div>
-
+                <div class="col-3">
+                    <p>
+                        <b>min. Nächte</b><br />
+                        {{ season.getMinNights() }}
+                    </p>
+                </div>
             </div>
 
         </form>
