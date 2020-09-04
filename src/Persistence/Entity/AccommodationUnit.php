@@ -189,7 +189,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
      */
     public function getPriceForDateRange(\DateTime $from, \DateTime $to): float
     {
-        $price = 0;
+        $price = (float) null;
 
         $from = clone $from;
 
@@ -228,6 +228,12 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
 
         // Calculate booking fee
         $bookingFee = $this->getPriceForDateRange($from, $to);
+
+        if ($bookingFee === null) {
+            return [
+                'error' => 'NoPriaceAvaialable'
+            ];
+        }
 
         $list[] = [
             'title' => 'Buchungsgebühr',
