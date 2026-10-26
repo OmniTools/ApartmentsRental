@@ -201,8 +201,8 @@ class Controller extends \OmniTools\Core\AbstractController
         $unit = $accommodationUnitRepository->find($get->get('unitId'));
 
         $unit->setMaxGuests((int) $post->get('maxGuests'));
-        $unit->setMaxDogs((int) $post->get('maxDogs') ?? 0);
-        $unit->setMaxToddlers((int) $post->get('maxToddlers') ?? 0);
+        $unit->setMaxDogs((int) ($post->get('maxDogs') ?? 0));
+        $unit->setMaxToddlers((int) ($post->get('maxToddlers') ?? 0));
         $unit->setBookableOnline(!empty($post->get('bookableOnline')));
 
         $entityManager->flush();
@@ -228,7 +228,8 @@ class Controller extends \OmniTools\Core\AbstractController
         $unit->setPriceCalculation($post->get('priceCalculation'));
         $unit->setAdditionalCosts($post->get('additionalCosts'));
         $unit->setAdditionalCostsPerGuest($post->get('additionalCostsPerGuest'));
-        $unit->setAdditionalCostsPerGuestThreshold($post->get('additionalCostsPerGuestThreshold'));
+        $threshold = $post->get('additionalCostsPerGuestThreshold');
+        $unit->setAdditionalCostsPerGuestThreshold($threshold === null || $threshold === '' ? null : (int) $threshold);
 
         $entityManager->flush();
 
@@ -249,7 +250,7 @@ class Controller extends \OmniTools\Core\AbstractController
         $unit = $accommodationUnitRepository->find($get->get('unitId'));
 
 
-        foreach ($post->get('texts') as $key => $value) {
+        foreach (($post->get('texts') ?? []) as $key => $value) {
 
             if ($text = $unit->getTextByKey($key)) {
 

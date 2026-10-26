@@ -39,8 +39,7 @@ class Controller extends \OmniTools\Core\Api\AbstractController
             )';
 
         $stmt = $entityManager->getConnection()->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
+        $result = $stmt->executeQuery()->fetchAllAssociative();
 
         return $result;
     }
@@ -118,8 +117,7 @@ class Controller extends \OmniTools\Core\Api\AbstractController
             ) ';
 
         $stmt = $entityManager->getConnection()->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
+        $result = $stmt->executeQuery()->fetchAllAssociative();
 
         $list = [];
 
@@ -146,7 +144,7 @@ class Controller extends \OmniTools\Core\Api\AbstractController
                 'title' => $unit->getTitle(),
                 'maxGuests' => $unit->getMaxGuests(),
                 'maxDogs' => $unit->getMaxDogs(),
-                'total' => $unit->getPriceForDates($dateFrom, $dateTo, $guests, $dogs),
+                'total' => $unit->getPriceForDates($dateFrom, $dateTo, (int) $dogs),
                 'nights' => $nights
             ];
         }

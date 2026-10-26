@@ -128,13 +128,12 @@ class Controller extends \OmniTools\Core\AbstractController
             ';
 
         $stmt = $entityManager->getConnection()->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
+        $result = $stmt->executeQuery()->fetchAllAssociative();
 
         // Set up grid
         $grid = [];
 
-        function generateState ($date, $unitId, $result) {
+        $generateState = static function ($date, $unitId, $result) {
 
             $date = new \DateTime($date);
             $state = 'free';
@@ -174,7 +173,7 @@ class Controller extends \OmniTools\Core\AbstractController
             }
 
             return $state;
-        }
+        };
 
         foreach ($units as $unit) {
 
@@ -184,7 +183,7 @@ class Controller extends \OmniTools\Core\AbstractController
 
                 $xdays[] = [
                     'date' => $date,
-                    'state' => generateState($date, $unit->getId(), $result)
+                    'state' => $generateState($date, $unit->getId(), $result)
                 ];
             }
 

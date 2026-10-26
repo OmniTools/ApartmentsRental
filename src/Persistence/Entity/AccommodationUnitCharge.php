@@ -63,7 +63,7 @@ class AccommodationUnitCharge extends \OmniTools\Core\Persistence\AbstractEntity
      */
     public function setPrice($price): void
     {
-        $this->price = (float) $price * 100;
+        $this->price = \OmniTools\ApartmentsRental\Money::toCents($price);
     }
 
     /**

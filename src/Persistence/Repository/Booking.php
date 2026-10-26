@@ -134,8 +134,7 @@ class Booking extends \OmniTools\Core\Persistence\AbstractRepository
         LIMIT 1';
 
         $stmt = $entityManager->getConnection()->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
+        $result = $stmt->executeQuery()->fetchAllAssociative();
 
         return count($result) > 0;
     }

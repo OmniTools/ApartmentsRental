@@ -43,12 +43,9 @@ class Controller extends \OmniTools\Core\AbstractController
 
         return new \OmniTools\Core\View\ResponseJson([
             'modalDismiss' => true,
-            'replace' => [
-                'selector' => '#unitsReceiver',
-                'html' => $front->renderPartial('ApartmentsRental/Plugin/AccommodationUnits/Controller/Unit/Partial/ListUnits', [
-                    'highlight' => $unit->getId()
-                ])
-            ]
+            'redirect' => $this->getActionUri('details', [
+                'customerId' => $customer->getId()
+            ])
         ]);
     }
 

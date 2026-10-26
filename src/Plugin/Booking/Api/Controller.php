@@ -31,7 +31,7 @@ class Controller extends \OmniTools\Core\Api\AbstractController
             throw new \Exception('Die maximale Anzahl an Gästen ist überschritten worden.');
         }
 
-        $priceSegments = $unit->getPriceSegments($dateFrom, $dateTo, $guests, $dogs);
+        $priceSegments = $unit->getPriceSegments($dateFrom, $dateTo, (int) $dogs);
 
         return $priceSegments;
     }

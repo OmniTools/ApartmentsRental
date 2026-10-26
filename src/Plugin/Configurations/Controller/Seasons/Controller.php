@@ -168,6 +168,7 @@ class Controller extends \OmniTools\Core\AbstractController
      *
      */
     public function generateAllChargesAction(
+        \OmniTools\Core\View\Front $front,
         \Doctrine\ORM\EntityManagerInterface $entityManager
     ): Response
     {

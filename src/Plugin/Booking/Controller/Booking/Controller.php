@@ -288,8 +288,10 @@ class Controller extends \OmniTools\Core\AbstractController
             throw new \Exception('Die Anfrage konnte nicht geladen werden.');
         }
 
-        $sql = "UPDATE apartmentsrental_booking SET type = 'Booking' WHERE id = " . $request->getId() . " LIMIT 1";
-        $entityManager->getConnection()->exec($sql);
+        $entityManager->getConnection()->executeStatement(
+            "UPDATE apartmentsrental_booking SET type = 'Booking' WHERE id = ?",
+            [$request->getId()]
+        );
 
         // Log approval
         $loggerService->log($request, 'Approved');

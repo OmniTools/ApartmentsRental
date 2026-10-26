@@ -62,6 +62,21 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     protected $texts;
 
     /**
+     * @Column(type="integer", nullable=true, options={"unsigned"=true})
+     */
+    protected $maxToddlers;
+
+    /**
+     * @Column(type="integer", nullable=true, options={"unsigned"=true})
+     */
+    protected $additionalCostsPerGuest;
+
+    /**
+     * @Column(type="integer", nullable=true, options={"unsigned"=true})
+     */
+    protected $additionalCostsPerGuestThreshold;
+
+    /**
      *
      */
     public function __construct(array $record = null)
@@ -87,7 +102,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
      */
     public function getAdditionalCosts(): float
     {
-        return $this->additionalCosts / 100;
+        return (float) $this->additionalCosts / 100;
     }
 
     /**
@@ -314,9 +329,9 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
-    public function setAdditionalCosts(float $costs)
+    public function setAdditionalCosts($costs)
     {
-        $this->additionalCosts = $costs * 100;
+        $this->additionalCosts = \OmniTools\ApartmentsRental\Money::toCents($costs);
     }
 
     /**
@@ -348,7 +363,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
      */
     public function setPrice($price): void
     {
-        $this->price = $price * 100;
+        $this->price = \OmniTools\ApartmentsRental\Money::toCents($price);
     }
 
     /**
@@ -356,7 +371,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
      */
     public function setPricePerDog($price): void
     {
-        $this->pricePerDog = $price * 100;
+        $this->pricePerDog = \OmniTools\ApartmentsRental\Money::toCents($price);
     }
 
     /**
@@ -373,5 +388,61 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     public function setTitle(string $title)
     {
         $this->title = $title;
+    }
+    public function getMaxToddlers(): ?int
+    {
+        return $this->maxToddlers;
+    }
+
+    public function setMaxToddlers(int $maxToddlers): void
+    {
+        $this->maxToddlers = $maxToddlers;
+    }
+
+    public function getAdditionalCostsPerGuest(): float
+    {
+        return (float) $this->additionalCostsPerGuest / 100;
+    }
+
+    public function setAdditionalCostsPerGuest($costs): void
+    {
+        $this->additionalCostsPerGuest = \OmniTools\ApartmentsRental\Money::toCents($costs);
+    }
+
+    public function getAdditionalCostsPerGuestThreshold(): ?int
+    {
+        return $this->additionalCostsPerGuestThreshold;
+    }
+
+    public function setAdditionalCostsPerGuestThreshold(?int $threshold): void
+    {
+        $this->additionalCostsPerGuestThreshold = $threshold;
+    }
+
+    public function hasChargeForSeason(Season $season): bool
+    {
+        return $this->getChargeForSeason($season) !== null;
+    }
+
+    public function getChargeForSeason(Season $season): ?AccommodationUnitCharge
+    {
+        foreach ($this->charges as $charge) {
+            if ($charge->getSeason() === $season) {
+                return $charge;
+            }
+        }
+        return null;
+    }
+
+    public function getMinNightsForDate(\DateTime $date): int
+    {
+        $minNights = 0;
+        foreach ($this->charges as $charge) {
+            $season = $charge->getSeason();
+            if ($date >= $season->getDateFrom() && $date <= $season->getDateTo()) {
+                $minNights = max($minNights, $season->getMinNights() ?? 0);
+            }
+        }
+        return $minNights;
     }
 }
