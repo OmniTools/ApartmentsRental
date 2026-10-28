@@ -166,31 +166,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
      */
     public function getPriceForDates(\DateTime $from, \DateTime $to, $dogs = 0): float
     {
-        $price = 0;
-
-        $from = clone $from;
-
-        while ($from < $to) {
-
-            $dayFee = $this->getPrice();
-
-            foreach ($this->getCharges() as $charge) {
-
-                if ($from < $charge->getSeason()->getDateFrom() or $to > $charge->getSeason()->getDateTo()) {
-                    continue;
-                }
-
-                if ($charge->getPrice() <= $dayFee) {
-                    continue;
-                }
-
-                $dayFee = $charge->getPrice();
-            }
-
-            $price += $dayFee;
-
-            $from->modify('+1 day');
-        }
+        $price = $this->getPriceForDateRange($from, $to);
 
         $price += $this->getAdditionalCosts();
 
@@ -204,28 +180,28 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
      */
     public function getPriceForDateRange(\DateTime $from, \DateTime $to): float
     {
-        $price = (float) null;
+        $price = 0.0;
 
         $from = clone $from;
 
         while ($from < $to) {
 
-            $dayFee = $this->getPrice();
+            $dayFee = null;
 
             foreach ($this->getCharges() as $charge) {
 
-                if ($from < $charge->getSeason()->getDateFrom() or $to > $charge->getSeason()->getDateTo()) {
+                if ($from < $charge->getSeason()->getDateFrom() or $from > $charge->getSeason()->getDateTo()) {
                     continue;
                 }
 
-                if ($charge->getPrice() <= $dayFee) {
+                if ($dayFee !== null && $charge->getPrice() <= $dayFee) {
                     continue;
                 }
 
                 $dayFee = $charge->getPrice();
             }
 
-            $price += $dayFee;
+            $price += $dayFee ?? $this->getPrice();
 
             $from->modify('+1 day');
         }
