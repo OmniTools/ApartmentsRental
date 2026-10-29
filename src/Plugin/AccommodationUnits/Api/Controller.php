@@ -144,7 +144,7 @@ class Controller extends \OmniTools\Core\Api\AbstractController
                 'title' => $unit->getTitle(),
                 'maxGuests' => $unit->getMaxGuests(),
                 'maxDogs' => $unit->getMaxDogs(),
-                'total' => $unit->getPriceForDates($dateFrom, $dateTo, (int) $dogs),
+                'total' => $unit->getPriceForDates($dateFrom, $dateTo, (int) $dogs, (int) $guests),
                 'nights' => $nights
             ];
         }

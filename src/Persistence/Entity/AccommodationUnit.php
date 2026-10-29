@@ -164,15 +164,9 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
-    public function getPriceForDates(\DateTime $from, \DateTime $to, $dogs = 0): float
+    public function getPriceForDates(\DateTime $from, \DateTime $to, $dogs = 0, $guests = 0): float
     {
-        $price = $this->getPriceForDateRange($from, $to);
-
-        $price += $this->getAdditionalCosts();
-
-        $price += ($dogs * $this->getPricePerDog());
-
-        return $price;
+        return $this->getPriceSegments($from, $to, $dogs, $guests)['total'];
     }
 
     /**
@@ -212,7 +206,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
     /**
      *
      */
-    public function getPriceSegments(\DateTime $from, \DateTime $to, $dogs = 0): array
+    public function getPriceSegments(\DateTime $from, \DateTime $to, $dogs = 0, $guests = 0): array
     {
         $list = [];
         $total = 0.0;
@@ -233,10 +227,16 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
 
         $total += $bookingFee;
 
+        // Count the same billable nights as the accommodation rate (departure excluded).
+        $nights = 0;
+        for ($date = clone $from; $date < $to; $date->modify('+1 day')) {
+            ++$nights;
+        }
+
         // Calculate fee for dogs
         if ($dogs > 0) {
 
-            $dogsFee = $dogs * $this->getPricePerDog();
+            $dogsFee = $dogs * $this->getPricePerDog() * $nights;
 
             $list[] = [
                 'title' => 'Gebühr für Hunde',
@@ -244,6 +244,20 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
             ];
 
             $total += $dogsFee;
+        }
+
+        // "ab Gast x" includes guest x; an unset threshold disables the surcharge.
+        $threshold = $this->getAdditionalCostsPerGuestThreshold();
+        if ($threshold !== null && $threshold > 0 && $this->getAdditionalCostsPerGuest() > 0) {
+            $extraGuests = max(0, (int) $guests - $threshold + 1);
+            $guestsFee = $extraGuests * $this->getAdditionalCostsPerGuest() * $nights;
+            if ($guestsFee > 0) {
+                $list[] = [
+                    'title' => 'Aufpreis für zusätzliche Gäste',
+                    'total' => $guestsFee,
+                ];
+                $total += $guestsFee;
+            }
         }
 
         if (($additionalCosts = $this->getAdditionalCosts()) > 0) {
@@ -268,7 +282,7 @@ class AccommodationUnit extends \OmniTools\Core\Persistence\AbstractEntity
      */
     public function getPriceSegmentsForBooking(\OmniTools\ApartmentsRental\Persistence\Entity\AbstractBooking $booking): array
     {
-        return $this->getPriceSegments($booking->getDateFrom(), $booking->getDateTo(), $booking->getDogs());
+        return $this->getPriceSegments($booking->getDateFrom(), $booking->getDateTo(), $booking->getDogs(), $booking->getGuestsCount());
     }
 
     /**

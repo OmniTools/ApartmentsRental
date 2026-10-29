@@ -39,8 +39,8 @@ foreach ($cases as [$label, $from, $to, $seasons, $expected]) {
     $departure = new DateTime($to);
     $results = [
         'nights' => [$unit->getPriceForDateRange($arrival, $departure), $expected],
-        'total' => [$unit->getPriceForDates($arrival, $departure, 2), $expected + 45],
-        'segments' => [$unit->getPriceSegments($arrival, $departure, 2)['total'], $expected + 45],
+        'total' => [$unit->getPriceForDates($arrival, $departure, 2), $expected + 25 + 20 * $arrival->diff($departure)->days],
+        'segments' => [$unit->getPriceSegments($arrival, $departure, 2)['total'], $expected + 25 + 20 * $arrival->diff($departure)->days],
     ];
     foreach ($results as $method => [$actual, $wanted]) {
         if (abs($actual - $wanted) > 0.00001) {
@@ -52,3 +52,43 @@ foreach ($cases as [$label, $from, $to, $seasons, $expected]) {
     }
 }
 echo count($cases) . " pricing cases passed.\n";
+
+// Daily supplements, inclusive guest threshold, and booking totals.
+foreach ([1, 5] as $nights) {
+    foreach ([0, 1, 2] as $dogs) {
+        foreach ([1, 2, 3, 4] as $guests) {
+            $unit = new AccommodationUnit();
+            $unit->setPrice(100);
+            $unit->setAdditionalCosts(25);
+            $unit->setPricePerDog(10);
+            $unit->setAdditionalCostsPerGuest(20);
+            $unit->setAdditionalCostsPerGuestThreshold(3);
+            $from = new DateTime('2026-10-24'); // Includes the daylight-saving transition.
+            $to = (clone $from)->modify("+$nights days");
+            $expected = 25 + $nights * (100 + 10 * $dogs + 20 * max(0, $guests - 2));
+            $booking = new \OmniTools\ApartmentsRental\Persistence\Entity\Booking([
+                'persons' => $guests - 1, 'children' => 1, 'toddlers' => 1, 'dogs' => $dogs,
+            ]);
+            $booking->setDateFrom($from);
+            $booking->setDateTo($to);
+            $segments = $unit->getPriceSegments($from, $to, $dogs, $guests);
+            foreach ([
+                $unit->getPriceForDates($from, $to, $dogs, $guests),
+                $segments['total'],
+                array_sum(array_column($segments['positions'], 'total')),
+                $unit->getPriceSegmentsForBooking($booking)['total'],
+            ] as $actual) {
+                if (abs($actual - $expected) > 0.00001) {
+                    throw new RuntimeException("Supplements: expected $expected, got $actual");
+                }
+            }
+        }
+    }
+}
+foreach ([null, 0] as $threshold) {
+    $unit->setAdditionalCostsPerGuestThreshold($threshold);
+    if ($unit->getPriceForDates($from, $to, 0, 4) !== 525.0) {
+        throw new RuntimeException('Unset threshold must disable guest surcharge');
+    }
+}
+echo "24 supplement cases passed.\n";

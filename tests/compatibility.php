@@ -88,10 +88,18 @@ $api->setPayload(['dateFrom' => '2030-06-11', 'dateTo' => '2030-06-12']);
 check($api->bookableUnitsByDateActionUsingGet($em) === [], 'Booked unit excluded');
 $api->setPayload(['dateFrom' => '2030-07-01', 'dateTo' => '2030-07-03', 'guests' => 2, 'dogs' => 1]);
 $available = $api->bookableUnitsByDateActionUsingGet($em);
-check(count($available) === 1 && abs($available[0]['total'] - 55.73) < 0.001, 'Availability price uses dogs, not guests');
+check(count($available) === 1 && abs($available[0]['total'] - 60.98) < 0.001, 'Availability price uses dogs, not guests');
 $costs = new OmniTools\ApartmentsRental\Plugin\Booking\Api\Controller();
 $costs->setPayload(['unitId' => $id, 'dateFrom' => '2030-07-01', 'dateTo' => '2030-07-03', 'guests' => 2, 'dogs' => 1]);
-check(abs($costs->costsActionUsingGet($em)['total'] - 55.73) < 0.001, 'Cost API agrees with availability');
+check(abs($costs->costsActionUsingGet($em)['total'] - 60.98) < 0.001, 'Cost API agrees with availability');
+
+// All public pricing entry points include extra guests and daily dog fees.
+$unit->setAdditionalCostsPerGuest(20);
+$unit->setAdditionalCostsPerGuestThreshold(2);
+$api->setPayload(['dateFrom' => '2030-07-01', 'dateTo' => '2030-07-03', 'guests' => 2, 'dogs' => 1]);
+check(abs($api->bookableUnitsByDateActionUsingGet($em)[0]['total'] - 100.98) < 0.001, 'Availability includes daily guest surcharge');
+$costs->setPayload(['unitId' => $id, 'dateFrom' => '2030-07-01', 'dateTo' => '2030-07-03', 'guests' => 1, 'children' => 1, 'dogs' => 1]);
+check(abs($costs->costsActionUsingGet($em)['total'] - 100.98) < 0.001, 'Cost API includes children in guest surcharge');
 
 // A view double avoids application filesystem/configuration dependencies.
 $view = new class extends OmniTools\Core\View {
